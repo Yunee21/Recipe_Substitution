@@ -9,7 +9,7 @@ st.title("신장질환 맞춤 레시피 대체 시스템")
 # -----------------------------
 # 👥 신체 정보 입력 (3열 구성)
 # -----------------------------
-with st.expander("🧬 신체 정보", expanded=True):
+with st.expander("👥 신체 정보", expanded=True):
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -88,7 +88,7 @@ else:
             matched = recipe_df[recipe_df["레시피명"].str.lower() == recipe_name.strip().lower()]
 
             if not matched.empty:
-                recipe = matched.iloc[0]  # 첫 번째 결과 사용
+                recipe = matched.iloc[0]
 
                 st.success(f"🔍 '{recipe_name}' 레시피를 찾았습니다.")
                 
@@ -114,8 +114,8 @@ can_submit = (
 
 if st.button("제출"):
     if can_submit:
-        st.success("입력이 완료되었습니다")
-        st.markdown("### ✅ 입력 요약")
+        st.success("입력이 완료되었습니다 ✅")
+        st.markdown("### 📝 입력 요약")
         st.write(f"- 성별: {gender}")
         st.write(f"- 신장: {height} cm")
         st.write(f"- 체중: {weight} kg")
@@ -126,7 +126,18 @@ if st.button("제출"):
         if ingredient_list:
             st.write(f"- 보유 식재료: {', '.join(ingredient_list)}")
         st.write("✅ 레시피명 입력 완료")
-    else:
-        st.error("필수 정보를 모두 입력하고, 레시피 파일을 업로드해야 제출할 수 있습니다")
 
+    else:
+        # 누락 항목 파악
+        missing = []
+        if not gender or not height or not weight:
+            missing.append("신체 정보")
+        if not kidney_stage or not kidney_dialysis:
+            missing.append("신장질환 정보")
+        if 'recipe_df' not in locals():
+            missing.append("레시피 정보")
+
+        st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
+        for item in missing:
+            st.markdown(f"- 🔴 {item}")
 
