@@ -9,7 +9,6 @@ st.title("신장질환 맞춤 레시피 대체 시스템")
 # -----------------------------
 # 👥 신체 정보 입력 (3열 구성)
 # -----------------------------
-st.markdown("📏 신체 정보")
 with st.expander("🧬 신체 정보", expanded=True):
     col1, col2, col3 = st.columns(3)
 
@@ -68,31 +67,38 @@ with st.expander("🧺 보유 식재료", expanded=True):
             st.success("입력된 식재료 목록:")
             st.write(ingredient_list)
         else:
-            st.info("보유 재료를 입력해주세요")
+            st.info("보유 식재료를 입력해주세요.")
 
 # %%
 # -----------------------------
 # 🍳 레시피 정보 입력
 # -----------------------------
-with st.expander("🍳 레시피 정보 업로드", expanded=True):
-    uploaded_file = st.file_uploader("레시피 CSV 파일을 업로드하세요", type=["csv"])
+recipe_file_path = "/Users/yunee/Library/CloudStorage/OneDrive-개인/바탕 화면/SNU/##질환 맞춤 레시피 대체 시스템 (GNN)/data/recipe.xlsx"
 
-    if uploaded_file is not None:
-        import pandas as pd
-        recipe_df = pd.read_csv(uploaded_file)
+try:
+    recipe_df = pd.read_excel(recipe_file_path)
+except FileNotFoundError:
+    st.error("레시피 파일을 찾을 수 없습니다. 경로를 확인해주세요.")
+else:
+    with st.expander("🍳 레시피명으로 재료 및 조리법 조회", expanded=True):
+        recipe_name = st.text_input("레시피명을 입력하세요", placeholder="예: 부대찌개")
 
-        st.success("레시피 파일 업로드가 완료되었습니다")
-        
-        # 데이터 확인
-        st.subheader("📋 업로드된 레시피 데이터 미리보기")
-        st.dataframe(recipe_df, use_container_width=True)
+        if recipe_name:
+            # 레시피명 정확 일치 (대소문자 구분 X)
+            matched = recipe_df[recipe_df["레시피명"].str.lower() == recipe_name.strip().lower()]
 
-        # 선택적 기능: 사용자가 선택한 컬럼만 보기
-        with st.expander("🔍 특정 컬럼만 보기"):
-            selected_cols = st.multiselect("보고 싶은 컬럼 선택", recipe_df.columns.tolist(), default=recipe_df.columns.tolist())
-            st.dataframe(recipe_df[selected_cols], use_container_width=True)
-    else:
-        st.info("섭취하고자 하는 레시피를 업로드해주세요")
+            if not matched.empty:
+                recipe = matched.iloc[0]  # 첫 번째 결과 사용
+
+                st.success(f"🔍 '{recipe_name}' 레시피를 찾았습니다.")
+                
+                st.markdown("#### 🧾 재료")
+                st.markdown(recipe["재료"])
+
+                st.markdown("#### 🍳 조리 방법")
+                st.markdown(recipe["조리방법"])
+            else:
+                st.warning("일치하는 레시피명이 없습니다. 정확하게 입력했는지 확인해주세요.")
 
 # %%
 # -----------------------------
@@ -119,7 +125,7 @@ if st.button("제출"):
             st.write(f"- eGFR 수치: {egfr}")
         if ingredient_list:
             st.write(f"- 보유 식재료: {', '.join(ingredient_list)}")
-        st.write("✅ 레시피 파일 업로드 완료")
+        st.write("✅ 레시피명 입력 완료")
     else:
         st.error("필수 정보를 모두 입력하고, 레시피 파일을 업로드해야 제출할 수 있습니다")
 
