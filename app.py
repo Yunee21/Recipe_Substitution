@@ -73,7 +73,7 @@ with st.expander("🧺 보유 식재료", expanded=True):
 # -----------------------------
 # 🍳 레시피 정보 입력
 # -----------------------------
-recipe_file_path = "/Users/yunee/Library/CloudStorage/OneDrive-개인/바탕 화면/SNU/##질환 맞춤 레시피 대체 시스템 (GNN)/data/recipe.xlsx"
+recipe_file_path = "recipe.xlsx"
 
 try:
     recipe_df = pd.read_excel(recipe_file_path)
