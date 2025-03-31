@@ -80,7 +80,7 @@ try:
 except FileNotFoundError:
     st.error("레시피 파일을 찾을 수 없습니다. 경로를 확인해주세요.")
 else:
-    with st.expander("🍳 레시피명으로 재료 및 조리법 조회", expanded=True):
+    with st.expander("🍳 섭취하고 싶은 음식", expanded=True):
         recipe_name = st.text_input("레시피명을 입력하세요", placeholder="예: 부대찌개")
 
         if recipe_name:
@@ -140,4 +140,5 @@ if st.button("제출"):
         st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
         for item in missing:
             st.markdown(f"- 🔴 {item}")
+
 
