@@ -106,45 +106,79 @@ can_submit = (
     and 'recipe_df' in locals()
 )
 
+# 제출 상태 관리
+if "submitted" not in st.session_state:
+    st.session_state["submitted"] = False
+
 if st.button("제출"):
     if can_submit:
-        st.markdown("### 📝 섭취 가이드")
-        st.write(f"- 제한: 나트륨, 칼륨")
-        st.write(f"- 적절: 단백질")
+        if not st.session_state["submitted"]:
+            st.markdown("### 📝 섭취 가이드")
+            st.write(f"- 제한: 나트륨, 칼륨")
+            st.write(f"- 적절: 단백질")
 
-        instructions = recipe_df['조리방법'].to_list()
-        cleaned_instructions = [step for step in instructions if isinstance(step, str)]
-        numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
+            instructions = recipe_df['조리방법'].to_list()
+            cleaned_instructions = [step for step in instructions if isinstance(step, str)]
+            numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("### 기존 레시피")
-            with st.expander("재료", expanded=True):
-                st.dataframe(recipe_df['재료'], use_container_width=True)
-            with st.expander("조리방법", expanded=True):
-                st.markdown(numbered_clean)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("### 기존 레시피")
+                with st.expander("재료", expanded=True):
+                    st.dataframe(recipe_df['재료'], use_container_width=True)
+                with st.expander("조리방법", expanded=True):
+                    st.markdown(numbered_clean)
 
-        with col2:
-            st.markdown("### 대체 레시피")
-            with st.expander("재료", expanded=True):
-                recipe_df.at[1, '재료'] = '*** 애호박 ***'
-                st.dataframe(recipe_df['재료'], use_container_width=True)
-            with st.expander("조리방법", expanded=True):
-                directions = """1. 두부는 키친타올로 물기를 제거한 뒤 깍둑썰기 한다.\n2. 애호박은 반으로 갈라 어슷하게 썬다.\n3. 팬에 들기름을 두르고 마늘을 볶아 향을 낸다.\n4. 두부와 애호박을 넣고 중불에서 노릇하게 볶는다.\n5. 간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 3~4분간 졸인다.\n6. 불을 끄고 쪽파를 넣어 마무리한다."""
-                st.markdown(directions)
+            with col2:
+                st.markdown("### 대체 레시피")
+                with st.expander("재료", expanded=True):
+                    recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
+                    st.dataframe(recipe_df['재료'], use_container_width=True)
+                with st.expander("조리방법", expanded=True):
+                    directions = """1. 두부는 키친타올로 물기를 제거한 뒤 깍둑썰기 한다.\n2.느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다.\n3.팬에 들기름을 두르고 마늘을 볶아 향을 낸다.\n4.두부와 느타리버섯을 넣고 중불에서 볶는다.\n5.간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다.\n6.불을 끄고 쪽파를 넣어 마무리한다."""
+                    st.markdown(directions)
 
-    else:
-        # 누락 항목 파악
-        missing = []
-        if not gender or not height or not weight:
-            missing.append("신체 정보")
-        if not kidney_stage or not kidney_dialysis:
-            missing.append("신장질환 정보")
-        if 'recipe_df' not in locals():
-            missing.append("레시피 정보")
+            st.session_state["submitted"] = True
 
-        st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
-        for item in missing:
-            st.markdown(f"- 🔴 {item}")
+
+        else:
+            st.markdown("### 📝 섭취 가이드")
+            st.write(f"- 제한: 나트륨, 칼륨")
+            st.write(f"- 적절: 단백질")
+
+            instructions = recipe_df['조리방법'].to_list()
+            cleaned_instructions = [step for step in instructions if isinstance(step, str)]
+            numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("### 기존 레시피")
+                with st.expander("재료", expanded=True):
+                    st.dataframe(recipe_df['재료'], use_container_width=True)
+                with st.expander("조리방법", expanded=True):
+                    st.markdown(numbered_clean)
+
+            with col2:
+                st.markdown("### 대체 레시피")
+                with st.expander("재료", expanded=True):
+                    recipe_df.at[0, '재료'] = '*** 애호박 ***'
+                    st.dataframe(recipe_df['재료'], use_container_width=True)
+                with st.expander("조리방법", expanded=True):
+                    directions = """1. 애호박은 반으로 갈라 어슷하게 썬다.\n2.느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다.\n3.팬에 들기름을 두르고 마늘을 볶아 향을 낸다.\n4.애호박과 느타리버섯을 넣고 중불에서 볶는다.\n5.간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다.\n6.불을 끄고 쪽파를 넣어 마무리한다."""
+                    st.markdown(directions)
+
+        else:
+            # 누락 항목 파악
+            missing = []
+            if not gender or not height or not weight:
+                missing.append("신체 정보")
+            if not kidney_stage or not kidney_dialysis:
+                missing.append("신장질환 정보")
+            if 'recipe_df' not in locals():
+                missing.append("레시피 정보")
+
+            st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
+            for item in missing:
+                st.markdown(f"- 🔴 {item}")
 
 
