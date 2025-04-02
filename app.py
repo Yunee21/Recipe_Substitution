@@ -120,7 +120,7 @@ if st.button("제출"):
         st.write(f"- 적절: 단백질")
 
         st.markdown("### 원본 레시피")
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(recipe_df, use_container_width=True)
 
 
 
