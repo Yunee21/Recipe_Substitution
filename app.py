@@ -167,18 +167,18 @@ if st.button("제출"):
                     directions = """1. 애호박은 반으로 갈라 어슷하게 썬다.\n2.느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다.\n3.팬에 들기름을 두르고 마늘을 볶아 향을 낸다.\n4.애호박과 느타리버섯을 넣고 중불에서 볶는다.\n5.간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다.\n6.불을 끄고 쪽파를 넣어 마무리한다."""
                     st.markdown(directions)
 
-        else:
-            # 누락 항목 파악
-            missing = []
-            if not gender or not height or not weight:
-                missing.append("신체 정보")
-            if not kidney_stage or not kidney_dialysis:
-                missing.append("신장질환 정보")
-            if 'recipe_df' not in locals():
-                missing.append("레시피 정보")
+    else:
+        # 누락 항목 파악
+        missing = []
+        if not gender or not height or not weight:
+            missing.append("신체 정보")
+        if not kidney_stage or not kidney_dialysis:
+            missing.append("신장질환 정보")
+        if 'recipe_df' not in locals():
+            missing.append("레시피 정보")
 
-            st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
-            for item in missing:
-                st.markdown(f"- 🔴 {item}")
+        st.error("❌ 제출할 수 없습니다. 다음 항목을 확인해주세요:")
+        for item in missing:
+            st.markdown(f"- 🔴 {item}")
 
 
