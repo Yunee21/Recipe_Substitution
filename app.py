@@ -136,7 +136,7 @@ if st.button("제출"):
                               4. 두부와 애호박을 넣고 중불에서 노릇하게 볶는다.
                               5. 간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 3~4분간 졸인다.
                               6. 불을 끄고 쪽파를 넣어 마무리한다."""
-                st.markdwon(directions)
+                st.markdown(directions)
 
     else:
         # 누락 항목 파악
