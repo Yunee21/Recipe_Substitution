@@ -126,7 +126,20 @@ if st.button("제출"):
         new_recipe_df['원본 재료'] = recipe_df['재료']
         st.dataframe(new_recipe_df.reset_index(drop=True), use_container_width=True)
 
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("원본 레시피")
+            with st.expander("조리방법", expanded=True):
+                st.dataframe(recipe_df['조리방법'], use_container_width=True)
+            with st.expander("재료", expanded=True):
+                st.dataframe(recipe_df['재료'], use_container_width=True)
 
+        with col2:
+            st.markdown("대체 레시피")
+            with st.expander("조리방법", expanded=True):
+                st.dataframe(recipe_df['조리방법'], use_container_width=True)
+            with st.expander("재료", expanded=True):
+                st.dataframe(recipe_df['재료'], use_container_width=True)
 
     else:
         # 누락 항목 파악
