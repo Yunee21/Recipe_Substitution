@@ -124,7 +124,7 @@ if st.button("제출"):
         new_recipe_df = pd.DataFrame([], columns=['원본 조리방법', '원본 재료', '대체 재료', '대체 조리방법'])
         new_recipe_df['원본 조리방법'] = recipe_df['조리방법']
         new_recipe_df['원본 재료'] = recipe_df['재료']
-        st.dataframe(new_recipe_df, use_container_width=True)
+        st.dataframe(new_recipe_df.reset_index(drop=True), use_container_width=True)
 
 
 
