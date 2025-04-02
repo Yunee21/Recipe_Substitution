@@ -120,7 +120,11 @@ if st.button("제출"):
         st.write(f"- 적절: 단백질")
 
         st.markdown("### 원본 레시피")
-        st.dataframe(recipe_df, use_container_width=True)
+
+        new_recipe_df = pd.DataFrame([], columns=['원본 조리방법', '원본 재료', '대체 재료', '대체 조리방법'])
+        new_recipe_df['원본 조리방법'] = recipe_df['조리방법']
+        new_recipe_df['원본 재료'] = recipe_df['재료']
+        st.dataframe(new_recipe_df, use_container_width=True)
 
 
 
