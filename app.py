@@ -162,6 +162,7 @@ if st.button("제출"):
                 st.markdown("### 대체 레시피")
                 with st.expander("재료", expanded=True):
                     recipe_df.at[0, '재료'] = '*** 애호박 ***'
+                    recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
                     st.dataframe(recipe_df['재료'], use_container_width=True)
                 with st.expander("조리방법", expanded=True):
                     directions = """1. 애호박은 반으로 갈라 어슷하게 썬다.\n2.느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다.\n3.팬에 들기름을 두르고 마늘을 볶아 향을 낸다.\n4.애호박과 느타리버섯을 넣고 중불에서 볶는다.\n5.간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다.\n6.불을 끄고 쪽파를 넣어 마무리한다."""
