@@ -108,7 +108,7 @@ st.markdown("---")
 
 can_submit = (
     gender and height and weight
-    and kidney_stage and kidney_dialysis
+    and kidney_stage
     and 'recipe_df' in locals()
 )
 
@@ -120,7 +120,6 @@ if st.button("제출"):
         st.write(f"- 신장: {height} cm")
         st.write(f"- 체중: {weight} kg")
         st.write(f"- 신장질환 단계: {kidney_stage}")
-        st.write(f"- 투석 여부: {kidney_dialysis}")
         if input_method == "eGFR 수치 입력":
             st.write(f"- eGFR 수치: {egfr}")
         if ingredient_list:
