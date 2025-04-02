@@ -115,16 +115,14 @@ can_submit = (
 if st.button("제출"):
     if can_submit:
         st.success("입력이 완료되었습니다 ✅")
-        st.markdown("### 📝 입력 요약")
-        st.write(f"- 성별: {gender}")
-        st.write(f"- 신장: {height} cm")
-        st.write(f"- 체중: {weight} kg")
-        st.write(f"- 신장질환 단계: {kidney_stage}")
-        if input_method == "eGFR 수치 입력":
-            st.write(f"- eGFR 수치: {egfr}")
-        if ingredient_list:
-            st.write(f"- 보유 식재료: {', '.join(ingredient_list)}")
-        st.write("✅ 레시피명 입력 완료")
+        st.markdown("### 📝 섭취 가이드")
+        st.write(f"- 제한: 나트륨, 칼륨")
+        st.write(f"- 적절: 단백질")
+
+        st.markdown("### 원본 레시피")
+        st.dataframe(df, use_container_width=True)
+
+
 
     else:
         # 누락 항목 파악
