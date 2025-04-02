@@ -33,7 +33,7 @@ with st.expander("🧬 신장질환 정보", expanded=True):
     egfr = None
 
     if input_method == "신장질환 단계 선택":
-        kidney_stage = st.selectbox("현재 신장질환 단계를 선택하세요", ["1단계", "2단계", "3단계", "4단계", "5단계", "복막투석", "혈액투석"])
+        kidney_stage = st.selectbox("현재 신장질환 단계를 선택하세요", ["1단계", "2단계", "3단계", "4단계", "5단계", "혈액투석", "복막투석"])
     else:
         egfr = st.number_input("eGFR 수치 입력", min_value=0.0, max_value=200.0, step=0.1)
         if egfr >= 90:
@@ -90,12 +90,6 @@ else:
                 recipe = matched.iloc[0]
 
                 st.success(f"🔍 '{recipe_name}' 레시피를 찾았습니다.")
-
-                st.markdown("#### 🧾 재료")
-                st.markdown(recipe["재료"])
-
-                st.markdown("#### 🍳 조리 방법")
-                st.markdown(recipe["조리방법"])
             else:
                 st.warning("일치하는 레시피명이 없습니다. 정확하게 입력했는지 확인해주세요.")
 
@@ -114,7 +108,6 @@ can_submit = (
 
 if st.button("제출"):
     if can_submit:
-        st.success("입력이 완료되었습니다 ✅")
         st.markdown("### 📝 섭취 가이드")
         st.write(f"- 제한: 나트륨, 칼륨")
         st.write(f"- 적절: 단백질")
