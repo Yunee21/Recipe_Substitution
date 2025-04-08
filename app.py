@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 
 # %%
-
 # -----------------------------
 # 📌 메뉴 선택 상태 초기화
 # -----------------------------
@@ -17,7 +16,7 @@ def set_menu(menu_name):
 selected = st.session_state["selected_menu"]
 
 # -----------------------------
-# 🎨 사용자 정의 스타일
+# 🎨 사용자 정의 스타일 (핑크색 버전)
 # -----------------------------
 st.markdown(
     """
@@ -27,7 +26,7 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] {
-        background-color: #f8f6fa;
+        background-color: #ffe6ed;
         padding: 2rem 1rem;
     }
 
@@ -43,25 +42,21 @@ st.markdown(
         border-radius: 8px;
         cursor: pointer;
         background-color: transparent;
-        color: #333333;
+        color: #ba3d60;
         transition: all 0.2s ease;
     }
 
     .menu-button:hover {
-        background-color: #e3d7f5;
+        background-color: #f8d4dd;
     }
 
     .menu-button.selected {
-        background-color: #9c5dc5 !important;
+        background-color: #ba3d60 !important;
         color: white !important;
     }
 
-    .menu-icon {
-        font-size: 18px;
-    }
-
     .stButton>button {
-        background-color: #9c5dc5;
+        background-color: #ba3d60;
         color: white;
         border: none;
         border-radius: 8px;
@@ -70,7 +65,7 @@ st.markdown(
     }
 
     .stButton>button:hover {
-        background-color: #834bb1;
+        background-color: #a13953;
     }
 
     .sidebar-description {
@@ -87,7 +82,7 @@ st.markdown(
 # -----------------------------
 # 🏷️ 상단 제목
 # -----------------------------
-st.markdown("<h1 style='color:#9c5dc5;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
 # -----------------------------
 # 📌 사이드바 메뉴 구성
@@ -103,7 +98,6 @@ with st.sidebar:
     for name, icon in menu_items.items():
         is_selected = (selected == name)
         btn_class = "menu-button selected" if is_selected else "menu-button"
-        # Streamlit 버튼으로 클릭을 감지하고, 아이콘 포함 메뉴는 markdown으로 시각화
         if st.button(name, key=f"menu_{name}"):
             set_menu(name)
         st.markdown(
@@ -120,6 +114,7 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
+# %%
 # -----------------------------
 # 👤 1) 프로필 입력
 # -----------------------------
