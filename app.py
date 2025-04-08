@@ -16,7 +16,7 @@ def set_menu(menu_name):
 selected = st.session_state["selected_menu"]
 
 # -----------------------------
-# 🎨 사용자 정의 스타일 (수정된 색상 포함)
+# 🎨 사용자 정의 스타일
 # -----------------------------
 st.markdown(
     """
@@ -36,14 +36,13 @@ st.markdown(
         justify-content: center;
         width: 100%;
         height: 48px;
-        padding: 10px 16px;
         margin-bottom: 12px;
         font-weight: bold;
         font-size: 16px;
         border-radius: 6px;
-        border: none;
         background-color: transparent;
         color: #ba3d60;
+        border: none;
         cursor: pointer;
         transition: all 0.2s ease;
     }
@@ -84,7 +83,7 @@ st.markdown(
 # -----------------------------
 # 🏷️ 상단 제목
 # -----------------------------
-st.markdown("<h1 style='color:#ba3d60;'>맞춤형 식단 추천 시스템 🍽️</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
 # -----------------------------
 # 📌 사이드바 메뉴
@@ -96,9 +95,10 @@ with st.sidebar:
     for item in menu_items:
         is_selected = selected == item
         class_name = "sidebar-button selected" if is_selected else "sidebar-button"
-        st.markdown(f"<div class='{class_name}'>{item}</div>", unsafe_allow_html=True)
         if st.button(item, key=f"menu_{item}"):
             set_menu(item)
+        else:
+            st.markdown(f"<div class='{class_name}'>{item}</div>", unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("### 사용 방법")
