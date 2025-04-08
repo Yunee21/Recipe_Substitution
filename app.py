@@ -5,7 +5,18 @@ import numpy as np
 
 # %%
 # -----------------------------
-# 🖼️ 사용자 정의 스타일
+# 📌 메뉴 선택 상태 초기화
+# -----------------------------
+if "selected_menu" not in st.session_state:
+    st.session_state["selected_menu"] = "프로필 입력"
+
+def set_menu(menu_name):
+    st.session_state["selected_menu"] = menu_name
+
+selected = st.session_state["selected_menu"]
+
+# -----------------------------
+# 🖼️ 사용자 정의 스타일 
 # -----------------------------
 st.markdown(
     """
@@ -19,11 +30,26 @@ st.markdown(
         padding: 2rem 1rem;
     }
 
-    .stRadio > label {
-        color: #c71e4d;
+    .sidebar-button {
+        display: block;
+        width: 100%;
+        padding: 10px 16px;
+        margin-bottom: 10px;
+        text-align: center;
         font-weight: bold;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
     }
-
+    .selected {
+        background-color: #c7527c !important;
+        color: white !important;
+    }
+    .unselected {
+        background-color: #f9dfe6 !important;
+        color: #c7527c !important;
+    }
     .stButton>button {
         background-color: #ff638f;
         color: white;
@@ -32,11 +58,9 @@ st.markdown(
         padding: 0.5rem 1rem;
         font-weight: bold;
     }
-
     .stButton>button:hover {
         background-color: #e5537f;
     }
-
     .sidebar-description {
         font-size: 0.9rem;
         color: #444444;
@@ -51,43 +75,34 @@ st.markdown(
 # -----------------------------
 # 🏷️ 상단 제목
 # -----------------------------
-st.markdown("<h1 style='color:#c71e4d;'>맞춤형 식단 추천 시스템 🍽️</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#c71e4d;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
 # -----------------------------
-# 📌 사이드바
+# 📌 사이드바 메뉴
 # -----------------------------
 with st.sidebar:
     st.markdown("### 메뉴 선택")
-    selected = st.radio(
-        "이동할 섹션을 선택하세요",
-        ["1) 프로필 입력", "2) 보유 식재료 입력", "3) 레시피 입력"]
-    )
-
-    st.markdown("### 데이터 관리")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button("데이터 저장")
-    with col2:
-        st.button("데이터 로드")
+    menu_items = ["프로필 입력", "보유 식재료 입력", "레시피 입력"]
+    for item in menu_items:
+        is_selected = st.session_state["selected_menu"] == item
+        btn_class = "selected" if is_selected else "unselected"
+        if st.button(item, key=f"menu_{item}"):
+            set_menu(item)
 
     st.markdown("---")
     st.markdown("### 사용 방법")
-    st.markdown(
-        """
+    st.markdown("""
         <div class='sidebar-description'>
-        1. 먼저 프로필 입력 탭에서 개인 정보를 입력해주세요.<br>
-        2. 식재료 선택 탭에서 보유한 식재료를 선택하세요.<br>
-        3. 마지막으로 식단 추천 탭에서 원하는 식단 타입을 선택하고 결과를 확인하세요.
+        1. 먼저 프로필 입력 탭에서 개인 신체 정보 및 신장질환 정보를 입력해주세요.<br>
+        2. 보유 식재료 입력 탭에서 현재 보유한 식재료를 입력하세요.<br>
+        3. 마지막으로 레시피 입력 탭에서 섭취하고자 하는 음식을 입력하고 결과를 확인하세요.
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    """, unsafe_allow_html=True)
 
-# %%
 # -----------------------------
 # 👤 1) 프로필 입력
 # -----------------------------
-with st.expander("1) 프로필 입력", expanded=(selected == "1) 프로필 입력")):
+with st.expander("1) 프로필 입력", expanded=(selected == "프로필 입력")):
     st.markdown("### 👥 신체 정보")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -122,7 +137,8 @@ with st.expander("1) 프로필 입력", expanded=(selected == "1) 프로필 입�
 # -----------------------------
 # 🧺 2) 보유 식재료 입력
 # -----------------------------
-with st.expander("2) 보유 식재료 입력", expanded=(selected == "2) 보유 식재료 입력")):
+st.markdown("---")
+with st.expander("2) 보유 식재료 입력", expanded=(selected == "보유 식재료 입력")):
     ingredient_input = st.text_area(
         "현재 보유하고 있는 식재료를 입력하세요 (쉼표로 구분)",
         placeholder="예: 두부, 양파, 간장, 달걀, 시금치"
@@ -140,7 +156,8 @@ with st.expander("2) 보유 식재료 입력", expanded=(selected == "2) 보유 
 # -----------------------------
 # 🍳 3) 레시피 입력
 # -----------------------------
-with st.expander("3) 레시피 입력", expanded=(selected == "3) 레시피 입력")):
+st.markdown("---")
+with st.expander("3) 레시피 입력", expanded=(selected == "레시피 입력")):
     recipe_file_path = "recipe.xlsx"
     try:
         recipe_df = pd.read_excel(recipe_file_path)
