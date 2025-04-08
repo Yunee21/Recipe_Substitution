@@ -5,7 +5,7 @@ import numpy as np
 
 # %%
 # -----------------------------
-# 👥 사용자 정의 스일 적용
+# 👥 사용자 정의 스타일 적용
 # -----------------------------
 st.markdown(
     """
@@ -13,47 +13,91 @@ st.markdown(
     .stApp {
         background-color: #ffffff;
     }
+
+    /* 사이드바 전체 배경 */
     section[data-testid="stSidebar"] {
         background-color: #ffe6ed;
+        padding: 2rem 1rem;
     }
-    h1, h2, h3, h4 {
-        color: #ff638f;
+
+    /* 사이드바 제목 스타일 */
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #c71e4d;
     }
-    .st-expander > summary {
-        color: #ff638f;
-        font-weight: 600;
+
+    /* 라디오 버튼 텍스트 */
+    .stRadio > label {
+        color: #c71e4d;
+        font-weight: bold;
     }
+
+    /* 버튼 스타일 */
     .stButton>button {
         background-color: #ff638f;
         color: white;
-        border: None;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: bold;
     }
+
     .stButton>button:hover {
         background-color: #e5537f;
         color: white;
     }
+
+    /* 설명 텍스트 스타일 */
+    .sidebar-description {
+        font-size: 0.9rem;
+        color: #444444;
+        line-height: 1.5;
+        margin-top: 1rem;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# %%
 # -----------------------------
 # 🏷️ 제목
 # -----------------------------
 st.markdown("<h1 style='color:#c71e4d;'>신장질환 맞춤 레시피 대체 시스템</h1>", unsafe_allow_html=True)
 
-
 # -----------------------------
 # 📌 사이드바 메뉴 설정
 # -----------------------------
 with st.sidebar:
+    st.markdown("### 메뉴 선택")
+
     selected = st.radio(
-        "이동할 섹션을 선택하세요",
-        ["1) 프로필 입력", "2) 보유 식재료 입력", "3) 레시피 입력"]
+        " ",
+        ["프로필 입력", "식재료 선택", "식단 추천"]
     )
 
+    st.markdown("### 데이터 관리")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button("데이터 저장")
+    with col2:
+        st.button("데이터 로드")
 
+    st.markdown("---")
+    st.markdown("### 사용 방법", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class='sidebar-description'>
+        1. 먼저 프로필 입력 탭에서 개인 정보를 입력해주세요.<br>
+        2. 식재료 선택 탭에서 보유한 식재료를 선택하세요.<br>
+        3. 마지막으로 식단 추천 탭에서 원하는 식단 타입을 선택하고 결과를 확인하세요.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+# %%
 # -----------------------------
 # 🧬 신체 정보 및 신장질환 정보 입력
 # -----------------------------
