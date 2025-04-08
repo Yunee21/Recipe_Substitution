@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 # %%
+
 # -----------------------------
 # 📌 메뉴 선택 상태 초기화
 # -----------------------------
@@ -26,38 +27,41 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] {
-        background-color: #ffe6ed;
+        background-color: #f8f6fa;
         padding: 2rem 1rem;
     }
 
-    .sidebar-button {
+    .menu-button {
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 48px;
-        margin-bottom: 12px;
-        font-weight: bold;
+        gap: 0.5rem;
+        padding: 8px 14px;
+        margin-bottom: 8px;
         font-size: 16px;
-        border-radius: 6px;
-        background-color: transparent;
-        color: #ba3d60;
+        font-weight: 600;
         border: none;
+        border-radius: 8px;
         cursor: pointer;
+        background-color: transparent;
+        color: #333333;
         transition: all 0.2s ease;
     }
 
-    .sidebar-button:hover {
-        background-color: #f9dfe6;
+    .menu-button:hover {
+        background-color: #e3d7f5;
     }
 
-    .sidebar-button.selected {
-        background-color: #ba3d60 !important;
+    .menu-button.selected {
+        background-color: #9c5dc5 !important;
         color: white !important;
     }
 
+    .menu-icon {
+        font-size: 18px;
+    }
+
     .stButton>button {
-        background-color: #ff638f;
+        background-color: #9c5dc5;
         color: white;
         border: none;
         border-radius: 8px;
@@ -66,7 +70,7 @@ st.markdown(
     }
 
     .stButton>button:hover {
-        background-color: #e5537f;
+        background-color: #834bb1;
     }
 
     .sidebar-description {
@@ -83,25 +87,31 @@ st.markdown(
 # -----------------------------
 # 🏷️ 상단 제목
 # -----------------------------
-st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#9c5dc5;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
 # -----------------------------
-# 📌 사이드바 메뉴
+# 📌 사이드바 메뉴 구성
 # -----------------------------
+menu_items = {
+    "프로필 입력": "👤",
+    "보유 식재료 입력": "🧺",
+    "레시피 입력": "🍳"
+}
+
 with st.sidebar:
     st.markdown("### 메뉴 선택")
-    menu_items = ["프로필 입력", "보유 식재료 입력", "레시피 입력"]
-
-    for item in menu_items:
-        is_selected = selected == item
-        class_name = "sidebar-button selected" if is_selected else "sidebar-button"
-        if st.button(item, key=f"menu_{item}"):
-            set_menu(item)
-        else:
-            st.markdown(f"<div class='{class_name}'>{item}</div>", unsafe_allow_html=True)
+    for name, icon in menu_items.items():
+        is_selected = (selected == name)
+        btn_class = "menu-button selected" if is_selected else "menu-button"
+        # Streamlit 버튼으로 클릭을 감지하고, 아이콘 포함 메뉴는 markdown으로 시각화
+        if st.button(name, key=f"menu_{name}"):
+            set_menu(name)
+        st.markdown(
+            f"<div class='{btn_class}'>{icon} {name}</div>",
+            unsafe_allow_html=True
+        )
 
     st.markdown("---")
-    st.markdown("### 사용 방법")
     st.markdown("""
         <div class='sidebar-description'>
         1. 먼저 프로필 입력 탭에서 개인 신체 정보 및 신장질환 정보를 입력해주세요.<br>
@@ -114,7 +124,7 @@ with st.sidebar:
 # 👤 1) 프로필 입력
 # -----------------------------
 with st.expander("1) 프로필 입력", expanded=(selected == "프로필 입력")):
-    st.markdown("### 👥 신체 정보")
+    st.markdown("👥 신체 정보")
     col1, col2, col3 = st.columns(3)
     with col1:
         gender = st.radio("성별", ["남성", "여성"], horizontal=True)
@@ -123,7 +133,7 @@ with st.expander("1) 프로필 입력", expanded=(selected == "프로필 입력"
     with col3:
         weight = st.text_input("체중(kg)", placeholder="예: 65")
 
-    st.markdown("### 🧬 신장질환 정보")
+    st.markdown("🧬 신장질환 정보")
     input_method = st.radio("입력 방식을 선택하세요", ("신장질환 단계 선택", "eGFR 수치 입력"))
     kidney_stage = None
     kidney_dialysis = None
