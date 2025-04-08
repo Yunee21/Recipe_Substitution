@@ -16,7 +16,7 @@ def set_menu(menu_name):
 selected = st.session_state["selected_menu"]
 
 # -----------------------------
-# 🖼️ 사용자 정의 스타일 
+# 🎨 사용자 정의 스타일 (수정된 색상 포함)
 # -----------------------------
 st.markdown(
     """
@@ -31,25 +31,32 @@ st.markdown(
     }
 
     .sidebar-button {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
+        height: 48px;
         padding: 10px 16px;
-        margin-bottom: 10px;
-        text-align: center;
+        margin-bottom: 12px;
         font-weight: bold;
+        font-size: 16px;
         border-radius: 6px;
         border: none;
+        background-color: transparent;
+        color: #ba3d60;
         cursor: pointer;
-        font-size: 16px;
+        transition: all 0.2s ease;
     }
-    .selected {
-        background-color: #c7527c !important;
+
+    .sidebar-button:hover {
+        background-color: #f9dfe6;
+    }
+
+    .sidebar-button.selected {
+        background-color: #ba3d60 !important;
         color: white !important;
     }
-    .unselected {
-        background-color: #f9dfe6 !important;
-        color: #c7527c !important;
-    }
+
     .stButton>button {
         background-color: #ff638f;
         color: white;
@@ -58,9 +65,11 @@ st.markdown(
         padding: 0.5rem 1rem;
         font-weight: bold;
     }
+
     .stButton>button:hover {
         background-color: #e5537f;
     }
+
     .sidebar-description {
         font-size: 0.9rem;
         color: #444444;
@@ -75,7 +84,7 @@ st.markdown(
 # -----------------------------
 # 🏷️ 상단 제목
 # -----------------------------
-st.markdown("<h1 style='color:#c71e4d;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color:#ba3d60;'>맞춤형 식단 추천 시스템 🍽️</h1>", unsafe_allow_html=True)
 
 # -----------------------------
 # 📌 사이드바 메뉴
@@ -83,9 +92,11 @@ st.markdown("<h1 style='color:#c71e4d;'>맞춤형 레시피 대체 시스템 �
 with st.sidebar:
     st.markdown("### 메뉴 선택")
     menu_items = ["프로필 입력", "보유 식재료 입력", "레시피 입력"]
+
     for item in menu_items:
-        is_selected = st.session_state["selected_menu"] == item
-        btn_class = "selected" if is_selected else "unselected"
+        is_selected = selected == item
+        class_name = "sidebar-button selected" if is_selected else "sidebar-button"
+        st.markdown(f"<div class='{class_name}'>{item}</div>", unsafe_allow_html=True)
         if st.button(item, key=f"menu_{item}"):
             set_menu(item)
 
