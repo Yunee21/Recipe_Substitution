@@ -16,7 +16,7 @@ def set_menu(menu_name):
 selected = st.session_state["selected_menu"]
 
 # -----------------------------
-# 🎨 사용자 정의 스타일 (핑크색 버전)
+# 🎨 사용자 정의 스타일
 # -----------------------------
 st.markdown(
     """
@@ -26,7 +26,7 @@ st.markdown(
     }
 
     section[data-testid="stSidebar"] {
-        background-color: #ffe6ed;
+        background-color: #faebef;
         padding: 2rem 1rem;
     }
 
