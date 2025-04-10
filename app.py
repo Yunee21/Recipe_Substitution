@@ -155,6 +155,7 @@ with st.sidebar:
 # 👤 프로필 입력
 # -----------------------------
 kidney_stage = ''
+cond_vec = []
 
 if selected == "프로필 입력":
     with st.expander("1) 프로필 입력", expanded=True):
@@ -182,12 +183,12 @@ if selected == "프로필 입력":
             elif egfr < 15: kidney_stage = "5단계"
             kidney_dialysis = st.selectbox("투석 여부", ["비투석", "복막투석", "혈액투석"])
 
-cond_vec = uts.getNutLabels(kidney_stage)
+    cond_vec = uts.getNutLabels(kidney_stage)
 
 # -----------------------------
 # 🧺 보유 식재료 입력
 # -----------------------------
-#elif selected == "보유 식재료 입력":
+elif selected == "보유 식재료 입력":
     with st.expander("2) 보유 식재료 입력", expanded=True):
         ingredient_input = st.text_area(
             "보유 식재료 (쉼표로 구분)", placeholder="예: 두부, 양파, 간장, 달걀, 시금치"
@@ -200,7 +201,6 @@ cond_vec = uts.getNutLabels(kidney_stage)
 # -----------------------------
 # 🍳 레시피 입력
 # -----------------------------
-recipe_name_ko = ''
 
 elif selected == "레시피 입력":
     with st.expander("3) 레시피 입력", expanded=True):
@@ -231,8 +231,6 @@ elif selected == "레시피 입력":
                 else:
                     st.warning("일치하는 레시피명이 없습니다.")
             '''
-
-
 
 
 # -----------------------------
