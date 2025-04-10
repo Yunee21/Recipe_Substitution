@@ -83,7 +83,7 @@ def getNutLabels(disease_info: str):
 
 def createHeteroGraph(recipe, ingredient_node: dict, direction_node: dict, device):
     data = HeteroData()
-
+    device = device if torch.cuda.is_available() else 'cpu'
     # ingredient
     ingredients = recipe['ingredients']
     num_of_ingre = len(ingredients)
