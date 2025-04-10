@@ -313,8 +313,3 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
     
     st.success("질환에 맞춘 건강한 레시피입니다!")
 
-
-    st.image("https://cdn.pixabay.com/photo/2017/06/02/18/24/dish-2363406_960_720.jpg", use_column_width=True)
-
-
-
