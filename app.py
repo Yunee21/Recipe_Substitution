@@ -278,6 +278,7 @@ if st.button("제출"):
 # 🍽️ 대체 레시피 추천
 # -----------------------------
 if selected == "대체 레시피 추천" and st.session_state["submitted"]:
+    recipe_file_path = "data/recipe_dct.pkl"
     recipe_dct = uts.loadPickle(recipe_file_path)
     target_recipe = st.session_state["recipe_name_ko"]
     target_recipe['nutrition_label_encodings'] = st.session_state["cond_vec"]
