@@ -303,12 +303,12 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
     st.markdown(uts.eng2ko('chicken thighs'))
     st.markdown("#### 🍳 대체 재료 후보들")
     subingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in sub]
-    st.markdown('''
-    - subingre_ko_lst[0]
-    - subingre_ko_lst[1]
-    - subingre_ko_lst[2]
-    - subingre_ko_lst[3]
-    - subingre_ko_lst[4]
+    st.markdown(f'''
+    - {subingre_ko_lst[0]}
+    - {subingre_ko_lst[1]}
+    - {subingre_ko_lst[2]}
+    - {subingre_ko_lst[3]}
+    - {subingre_ko_lst[4]}
     ''')
     
     st.success("질환에 맞춘 건강한 레시피입니다!")
