@@ -213,9 +213,9 @@ elif selected == "레시피 입력":
             st.error("레시피 파일을 찾을 수 없습니다.")
         else:
             recipe_name_ko = st.text_input("레시피명", placeholder="예: 부대찌개")
-             if recipe_name_ko:
+            if recipe_name_ko:
                 recipe_name_en = uts.ko2eng(recipe_name_ko)
-                 print(f"'{recipe_name_en}'를 입력받았습니다")
+                print(f"'{recipe_name_en}'를 입력받았습니다")
                  
             '''
             recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
