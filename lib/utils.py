@@ -41,6 +41,18 @@ def eng2ko(word: str):
 
 def ko2eng(word: str):
     return GoogleTranslator(source='ko', target='en').translate(word)
+
+def makeCoOccursWith(ingredients):
+    src = []
+    des = []
+    for i1 in ingredients:
+        for i2 in ingredients:
+            if (i1 != i2):
+                src.append(uts.node2id(i1, ingredients))
+                des.append(uts.node2id(i2, ingredients))
+
+    co_occurs_with = [src, des]
+    return co_occurs_with
     
 def calBMI(weight, height):
     return float(weight) / (float(height)*float(height))
