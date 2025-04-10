@@ -287,7 +287,7 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
     direction_node  = uts.loadPickle("data/direction_node.pkl")
     recipe_data = uts.createHeteroGraph(target_recipe, ingredient_node, direction_node, device)
 
-    inference(
+    sub = inference(
             test_graph=recipe_data,
             model_path="gnn/results/best_model.pt",
             recipe_graph_path="gnn/results/recipe_graphs_lst.pkl",
@@ -298,21 +298,13 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
 
     st.markdown("---")
     st.markdown("## 🍽️ 대체 레시피 추천 결과")
-
+    st.markdown("#### 🧾 원본 재료")
+    st.markdown('chicken thighs')
+    st.markdown("#### 🍳 대체 재료 후보들")
+    st.markdown(sub)
+    
     st.success("질환에 맞춘 건강한 레시피입니다!")
 
-    st.markdown("#### ✅ 대체 레시피: 느타리버섯 두부조림")
-    st.markdown("""
-    - 저염 간장소스를 활용한 건강식  
-    - 칼륨/나트륨 제한  
-    - 고단백 & 저인 조리법  
-    """)
-    st.markdown("#### 🍳 조리법")
-    st.markdown("""
-    1. 두부를 깍둑썰기 해 물기를 제거합니다.  
-    2. 느타리버섯은 손으로 찢어 팬에 마늘과 볶습니다.  
-    3. 저염 간장소스와 물을 넣고 약불에 졸입니다.  
-    """)
 
     st.image("https://cdn.pixabay.com/photo/2017/06/02/18/24/dish-2363406_960_720.jpg", use_column_width=True)
 
