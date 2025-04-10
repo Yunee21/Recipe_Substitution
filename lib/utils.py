@@ -181,7 +181,7 @@ def get_top_k_similar_ingredients(recon_vector, ingredient_embeddings, ingredien
     topk_vals, topk_indices = torch.topk(cos_sim, k, dim=0)
 
     results = []
-    for rank in range(k):
+    for rank in range(10,20):
         idx = topk_indices[rank].item()
         sim_score = topk_vals[rank].item()
         ingre_name = ingredient_lst[idx]
@@ -248,8 +248,9 @@ def inference(
     #for m_idx in mask_indices:
     recon_vector = recon_ingre[m_idx]  # shape: (ingre_feat_dim,)
 
-    a = ingredient_lst.index(test_graph['ingredients'][mask_indices[0]])
-    recon_vector = ingredient_embeddings[a]
+    a = ingredient_lst.index('chicken thighs')
+    recon_vector = ingredient_embeddings[a].to(device)
+        
 
     print(f"\n[Masked Node={m_idx}] Reconstructed embedding (first 5 dims):")
     print(recon_vector[:5].cpu().numpy())
