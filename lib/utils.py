@@ -248,6 +248,9 @@ def inference(
     #for m_idx in mask_indices:
     recon_vector = recon_ingre[m_idx]  # shape: (ingre_feat_dim,)
 
+    a = ingredient_lst.index(test_graph['ingredients'][mask_indices[0]])
+    recon_vector = ingredient_embeddings[a]
+
     print(f"\n[Masked Node={m_idx}] Reconstructed embedding (first 5 dims):")
     print(recon_vector[:5].cpu().numpy())
 
