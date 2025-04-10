@@ -296,7 +296,7 @@ if selected == "대체 레시피 추천" and st.session_state["first_submitted"]
 
     recipe_df = pd.read_excel("recipe.xlsx")
 
-    if (not st.session_state["submitted"])
+    if (not st.session_state["submitted"]):
         
         st.markdown("#### 🧾 재료")
         
