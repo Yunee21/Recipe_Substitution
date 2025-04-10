@@ -237,8 +237,8 @@ elif selected == "레시피 입력":
                 else:
                     recipe_name_en = uts.ko2eng(recipe_name_ko)
 
-                ingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in recipe_Name_en[recipe_name_en]['ingredients']]
-                direc_ko_lst = [uts.eng2ko(direc_en) for direc_en in recipe_Name_en[recipe_name_en]['directions']]
+                ingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in recipe_dct[recipe_name_en]['ingredients']]
+                direc_ko_lst = [uts.eng2ko(direc_en) for direc_en in recipe_dct[recipe_name_en]['directions']]
                 
                 st.success(f"🔍 '{recipe_name_en}' 레시피를 찾았습니다.")
                 st.markdown("#### 🧾 재료")
