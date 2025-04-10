@@ -187,7 +187,7 @@ cond_vec = uts.getNutLabels(kidney_stage)
 # -----------------------------
 # 🧺 보유 식재료 입력
 # -----------------------------
-elif selected == "보유 식재료 입력":
+#elif selected == "보유 식재료 입력":
     with st.expander("2) 보유 식재료 입력", expanded=True):
         ingredient_input = st.text_area(
             "보유 식재료 (쉼표로 구분)", placeholder="예: 두부, 양파, 간장, 달걀, 시금치"
