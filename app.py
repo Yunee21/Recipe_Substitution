@@ -288,7 +288,7 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
     direction_node  = uts.loadPickle("data/direction_node.pkl")
     recipe_data = uts.createHeteroGraph(target_recipe, ingredient_node, direction_node, device)
 
-    sub = inference(
+    sub = uts.inference(
             test_graph=recipe_data,
             model_path="gnn/results/best_model.pt",
             recipe_graph_path="gnn/results/recipe_graphs_lst.pkl",
