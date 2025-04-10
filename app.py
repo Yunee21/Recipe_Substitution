@@ -235,23 +235,33 @@ elif selected == "레시피 입력":
                         'follows': [[0,0,1,2,2,1,3],
                                     [1,2,3,1,3,4,4]],
                     }
+
+                elif (recipe_name_ko == '매콤 두부 가지볶음'):
+                    recipe_df = pd.read_excel(recipe_file_path)
+                    instructions = recipe_df['조리방법'].to_list()
+                    cleaned_instructions = [step for step in instructions if isinstance(step, str)]
+                    numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
+                    st.markdown("#### 🧾 재료")
+                    st.dataframe(recipe_df['재료'], use_container_width=True)
+                    st.markdown("#### 🍳 조리 방법")
+                    st.markdown(numbered_clean)
+
                     
+                
                 else:
                     recipe_name_en = uts.ko2eng(recipe_name_ko)
 
-                ingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in recipe_dct[recipe_name_en]['ingredients']]
-                direc_ko_lst = [uts.eng2ko(direc_en) for direc_en in recipe_dct[recipe_name_en]['directions']]
-                
-                st.success(f"🔍 '{recipe_name_en}' 레시피를 찾았습니다.")
-                st.markdown("#### 🧾 재료")
-                st.markdown(ingre_ko_lst)
-                st.markdown("#### 🍳 조리 방법")
-                st.markdown(direc_ko_lst)
+                    ingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in recipe_dct[recipe_name_en]['ingredients']]
+                    direc_ko_lst = [uts.eng2ko(direc_en) for direc_en in recipe_dct[recipe_name_en]['directions']]
+                    
+                    st.success(f"🔍 '{recipe_name_en}' 레시피를 찾았습니다.")
+                    st.markdown("#### 🧾 재료")
+                    st.markdown(ingre_ko_lst)
+                    st.markdown("#### 🍳 조리 방법")
+                    st.markdown(direc_ko_lst)
+    
+                    st.session_state["recipe_name_ko"] = recipe_dct[recipe_name_en]
 
-                st.session_state["recipe_name_ko"] = recipe_dct[recipe_name_en]
-
-            else:
-                st.warning("일치하는 레시피명이 없습니다.")
                          
 
 # -----------------------------
