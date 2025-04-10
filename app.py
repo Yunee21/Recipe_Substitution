@@ -2,8 +2,18 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import torch
+import random
 from lib import utils as uts
 
+
+device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
+seed = 721
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(seed)
 
 # %%
 # -----------------------------
@@ -194,12 +204,19 @@ recipe_name = ''
 
 elif selected == "레시피 입력":
     with st.expander("3) 레시피 입력", expanded=True):
-        recipe_file_path = "recipe.xlsx"
+        #recipe_file_path = "recipe.xlsx"
+        recipe_file_path = "data/recipe_dct.pkl"
         try:
-            recipe_df = pd.read_excel(recipe_file_path)
+            #recipe_df = pd.read_excel(recipe_file_path)
+            recipe_dct = uts.loadPickle(recipe_file_path)
         except FileNotFoundError:
             st.error("레시피 파일을 찾을 수 없습니다.")
         else:
+            recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
+             if recipe_name:
+
+                 
+            '''
             recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
             if recipe_name:
                 matched = recipe_df[recipe_df["레시피명"].str.lower() == recipe_name.strip().lower()]
@@ -212,7 +229,7 @@ elif selected == "레시피 입력":
                     st.markdown(recipe["조리방법"])
                 else:
                     st.warning("일치하는 레시피명이 없습니다.")
-
+            '''
 
 
 
