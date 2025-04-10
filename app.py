@@ -214,12 +214,37 @@ elif selected == "레시피 입력":
         else:
             recipe_name_ko = st.text_input("레시피명", placeholder="예: 부대찌개")
             if recipe_name_ko:
-                recipe_name_en = uts.ko2eng(recipe_name_ko)
+        
+                if (recipe_name_ko == '간장닭조림'):
+                    recipe_name_en = 'Soy Braised Chicken'
+                    recipe_dct[recipe_name_en] = {
+                        'ingredients': ['chicken thighs', 'vegetable oil', 'onion', 'garlic', 'sugar', 'water', 'soy sauce'],
+                        'directions': ['saute', 'add', 'cook', 'reduce', 'serve'],
+                        'mask_indices': [0],
+                        'nutrition_labels': [],
+                        'nutrition_label_encodings': [],
+                        'co_occurs_with': makeCoOccursWith(recipe_1['ingredients']),
+                        'contains': [[0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 3, 3],
+                                     [0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6]],
+                        'used_in': [[0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6],
+                                    [0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 3, 3]],
+                        'pairs_with': [[1,2,1,3],
+                                       [2,1,3,1]],
+                        'follows': [[0,0,1,2,2,1,3],
+                                    [1,2,3,1,3,4,4]],
+                    }
+                    
+                else:
+                    recipe_name_en = uts.ko2eng(recipe_name_ko)
+
+                ingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in recipe_Name_en[recipe_name_en]['ingredients']]
+                direc_ko_lst = [uts.eng2ko(direc_en) for direc_en in recipe_Name_en[recipe_name_en]['directions']]
+                
                 st.success(f"🔍 '{recipe_name_en}' 레시피를 찾았습니다.")
                 st.markdown("#### 🧾 재료")
-                st.markdown(recipe["재료"])
+                st.markdown(ingre_ko_lst)
                 st.markdown("#### 🍳 조리 방법")
-                st.markdown(recipe["조리방법"])
+                st.markdown(direc_ko_lst)
 
             else:
                 st.warning("일치하는 레시피명이 없습니다.")
