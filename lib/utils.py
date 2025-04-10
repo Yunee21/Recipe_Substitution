@@ -201,7 +201,7 @@ def inference(
     print("Device:", device)
 
     # (1) 학습된 모델과 동일한 구조로 모델 준비
-    recipe_graphs = loadPickle("~/gnn/results/recipe_graphs_lst.pkl")
+    recipe_graphs = loadPickle("gnn/results/recipe_graphs_lst.pkl")
     max_num_of_ingre = max([data['ingredient'].x.size(0) for data in recipe_graphs])
 
     ingre_feat_dim = test_graph['ingredient'].x.shape[1]
