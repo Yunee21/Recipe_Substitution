@@ -47,10 +47,10 @@ def calBMI(weight, height):
 
 def getNutLabels(disease_info: str):
     disease_lst = ['3단계', '4단계', '혈액투석']
-    assert(disease_info in disease_lst)
+    #assert(disease_info in disease_lst)
 
-    print("BMI 정상 가정")
-    print(f"{disease_lst}에서 {disease_info} 입력됨")
+    #print("BMI 정상 가정")
+    #print(f"{disease_lst}에서 {disease_info} 입력됨")
 
     # low fat | low potassium | high protein | low protien | low phosphorus | low sodium | high potassium
     nut_label_vec = []
