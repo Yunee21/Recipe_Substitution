@@ -294,7 +294,7 @@ if selected == "대체 레시피 추천" and st.session_state["first_submitted"]
     recipe_df = pd.read_excel("recipe.xlsx")
 
     if (not st.session_state["submitted"]):
-        time.sleep(10) 
+        time.sleep(7) 
         st.markdown("#### 🧾 재료")
         
         recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
@@ -308,7 +308,7 @@ if selected == "대체 레시피 추천" and st.session_state["first_submitted"]
         st.success("질환에 맞춘 건강한 레시피입니다!")
 
     else:
-        time.sleep(10) 
+        time.sleep(7) 
         st.markdown("### 📝 섭취 가이드")
         st.write(f"- 제한: 나트륨, 칼륨")
         st.write(f"- 적절: 단백질")
