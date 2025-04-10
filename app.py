@@ -200,7 +200,7 @@ elif selected == "보유 식재료 입력":
 # -----------------------------
 # 🍳 레시피 입력
 # -----------------------------
-recipe_name = ''
+recipe_name_ko = ''
 
 elif selected == "레시피 입력":
     with st.expander("3) 레시피 입력", expanded=True):
@@ -212,9 +212,10 @@ elif selected == "레시피 입력":
         except FileNotFoundError:
             st.error("레시피 파일을 찾을 수 없습니다.")
         else:
-            recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
-             if recipe_name:
-
+            recipe_name_ko = st.text_input("레시피명", placeholder="예: 부대찌개")
+             if recipe_name_ko:
+                recipe_name_en = uts.ko2eng(recipe_name_ko)
+                 print(f"'{recipe_name_en}'를 입력받았습니다")
                  
             '''
             recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
