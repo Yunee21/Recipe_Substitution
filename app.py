@@ -60,7 +60,16 @@ st.markdown(
     }
 
     .stButton>button {
-        display: none;
+        /* display: none; */
+        background-color: transparent;
+        border: none;
+        color: #ba3d60;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        cursor: pointer;
     }
 
     .sidebar-description {
