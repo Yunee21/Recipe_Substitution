@@ -48,8 +48,8 @@ def makeCoOccursWith(ingredients):
     for i1 in ingredients:
         for i2 in ingredients:
             if (i1 != i2):
-                src.append(uts.node2id(i1, ingredients))
-                des.append(uts.node2id(i2, ingredients))
+                src.append(node2id(i1, ingredients))
+                des.append(node2id(i2, ingredients))
 
     co_occurs_with = [src, des]
     return co_occurs_with
