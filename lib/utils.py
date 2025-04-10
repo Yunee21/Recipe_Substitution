@@ -11,6 +11,8 @@ from gnn.model import ConditionalHeteroGraphVAE
 from gnn.gnn_utils import padIngredientNode
 from gnn.loss import lossFunction
 
+from deep_translator import GoogleTranslator
+
 
 def save2pickle(file_name: str, data):
     assert file_name[-3:] == "pkl"
@@ -34,6 +36,8 @@ def id2node(id: int, data: list) -> str:
 def node2id(node: str, data: list) -> int:
     return data.index(node)
 
+def eng2ko(word: str):
+    return GoogleTranslator(source='en', target='ko').translate(word)
 
 def calBMI(weight, height):
     return float(weight) / (float(height)*float(height))
