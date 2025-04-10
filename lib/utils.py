@@ -94,7 +94,7 @@ def createHeteroGraph(recipe, ingredient_node: dict, direction_node: dict, devic
         feat_vec = ingredient_node['feature_vector'][ingre_glob_id]
         X[idx] = feat_vec
 
-    data['ingredient'].x = X.to('cuda')
+    data['ingredient'].x = X.to(device)
     data['ingredient'].name = ingredients
     data['ingredient'].node_id = torch.arange(num_of_ingre, device=device)
 
@@ -108,7 +108,7 @@ def createHeteroGraph(recipe, ingredient_node: dict, direction_node: dict, devic
         feat_vec = direction_node['feature_vector'][direc_glob_id]
         X[idx] = feat_vec
 
-    data['direction'].x = X.to('cuda')
+    data['direction'].x = X.to(device)
     data['direction'].name = directions
     data['direction'].node_id = torch.arange(num_of_direc, device=device)
 
@@ -197,7 +197,7 @@ def inference(
         mask_indices=[0]
     ):
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = device if torch.cuda.is_available() else 'cpu'
     print("Device:", device)
 
     # (1) 학습된 모델과 동일한 구조로 모델 준비
