@@ -223,7 +223,7 @@ elif selected == "레시피 입력":
                         'mask_indices': [0],
                         'nutrition_labels': [],
                         'nutrition_label_encodings': [],
-                        'co_occurs_with': uts.makeCoOccursWith(recipe_1['ingredients']),
+                        'co_occurs_with': uts.makeCoOccursWith(['chicken thighs', 'vegetable oil', 'onion', 'garlic', 'sugar', 'water', 'soy sauce']),
                         'contains': [[0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 3, 3],
                                      [0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6]],
                         'used_in': [[0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6],
