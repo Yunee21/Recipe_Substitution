@@ -140,7 +140,7 @@ with st.sidebar:
         if st.button(f"{icon} {name}", key=f"click_{name}"):
             if not is_disabled:
                 set_menu(name)
-
+        
 
 
     st.markdown("---")
@@ -154,8 +154,6 @@ with st.sidebar:
 # -----------------------------
 # 👤 프로필 입력
 # -----------------------------
-kidney_stage = ''
-cond_vec = []
 
 if selected == "프로필 입력":
     with st.expander("1) 프로필 입력", expanded=True):
@@ -182,8 +180,12 @@ if selected == "프로필 입력":
             elif 15 <= egfr < 30: kidney_stage = "4단계"
             elif egfr < 15: kidney_stage = "5단계"
             kidney_dialysis = st.selectbox("투석 여부", ["비투석", "복막투석", "혈액투석"])
-
-    cond_vec = uts.getNutLabels(kidney_stage)
+        
+        st.session_state["gender"] = gender
+        st.session_state["height"] = height
+        st.session_state["weight"] = weight
+        st.session_state["kidney_stage"] = kidney_stage
+        st.session_state["cond_vec"] = uts.getNutLabels(kidney_stage)
 
 # -----------------------------
 # 🧺 보유 식재료 입력
@@ -246,6 +248,8 @@ elif selected == "레시피 입력":
                 st.markdown("#### 🍳 조리 방법")
                 st.markdown(direc_ko_lst)
 
+                st.session_state["recipe_name_ko"] = recipe_name_ko
+
             else:
                 st.warning("일치하는 레시피명이 없습니다.")
                          
@@ -256,7 +260,11 @@ elif selected == "레시피 입력":
 st.markdown("---")
 
 can_submit = (
-    "gender" in locals() and height and weight and kidney_stage and "recipe_dct" in locals()
+    st.session_state.get("gender")
+    and st.session_state.get("height")
+    and st.session_state.get("weight")
+    and st.session_state.get("kidney_stage")
+    and st.session_state.get("recipe_name_ko")
 )
 
 if st.button("제출"):
