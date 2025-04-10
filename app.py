@@ -237,7 +237,7 @@ elif selected == "레시피 입력":
                     }
 
                 elif (recipe_name_ko == '매콤 두부 가지볶음'):
-                    recipe_df = pd.read_excel(recipe_file_path)
+                    recipe_df = pd.read_excel("recipe.xlsx")
                     instructions = recipe_df['조리방법'].to_list()
                     cleaned_instructions = [step for step in instructions if isinstance(step, str)]
                     numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
