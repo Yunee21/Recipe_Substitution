@@ -217,20 +217,20 @@ elif selected == "레시피 입력":
                 recipe_name_en = uts.ko2eng(recipe_name_ko)
                 print(f"'{recipe_name_en}'를 입력받았습니다")
                  
-            '''
-            recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
-            if recipe_name:
-                matched = recipe_df[recipe_df["레시피명"].str.lower() == recipe_name.strip().lower()]
-                if not matched.empty:
-                    recipe = matched.iloc[0]
-                    st.success(f"🔍 '{recipe_name}' 레시피를 찾았습니다.")
-                    st.markdown("#### 🧾 재료")
-                    st.markdown(recipe["재료"])
-                    st.markdown("#### 🍳 조리 방법")
-                    st.markdown(recipe["조리방법"])
-                else:
-                    st.warning("일치하는 레시피명이 없습니다.")
-            '''
+'''
+recipe_name = st.text_input("레시피명", placeholder="예: 부대찌개")
+if recipe_name:
+    matched = recipe_df[recipe_df["레시피명"].str.lower() == recipe_name.strip().lower()]
+    if not matched.empty:
+        recipe = matched.iloc[0]
+        st.success(f"🔍 '{recipe_name}' 레시피를 찾았습니다.")
+        st.markdown("#### 🧾 재료")
+        st.markdown(recipe["재료"])
+        st.markdown("#### 🍳 조리 방법")
+        st.markdown(recipe["조리방법"])
+    else:
+        st.warning("일치하는 레시피명이 없습니다.")
+'''
 
 
 # -----------------------------
