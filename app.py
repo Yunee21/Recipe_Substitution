@@ -280,6 +280,7 @@ if st.button("제출"):
     if can_submit:
         st.session_state["submitted"] = False
         st.session_state["first_submitted"] = True
+        set_menu("대체 레시피 추천")  # 제출 직후 자동으로 이동
         st.success("제출이 완료되었습니다. '대체 레시피 추천' 메뉴를 확인해보세요.")
     else:
         st.error("❌ 제출할 수 없습니다. 필수 항목을 모두 입력해주세요.")
