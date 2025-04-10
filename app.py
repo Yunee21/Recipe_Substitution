@@ -256,7 +256,7 @@ elif selected == "레시피 입력":
 st.markdown("---")
 
 can_submit = (
-    "gender" in locals() and height and weight and kidney_stage and "recipe_df" in locals()
+    "gender" in locals() and height and weight and kidney_stage and "recipe_dct" in locals()
 )
 
 if st.button("제출"):
