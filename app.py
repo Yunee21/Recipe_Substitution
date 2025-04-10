@@ -274,7 +274,7 @@ can_submit = (
     and st.session_state.get("height")
     and st.session_state.get("weight")
     and st.session_state.get("kidney_stage")
-    and st.session_state.get("recipe_name_ko")
+    and st.session_state.get("recipe_file_path")
 )
 
 if st.button("제출"):
