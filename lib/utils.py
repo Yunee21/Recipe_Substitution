@@ -256,6 +256,7 @@ def inference(
     print(recon_vector[:5].cpu().numpy())
 
     # (6) 코사인 유사도 Top-5
+    sub = []
     if ingredient_embeddings is not None and ingredient_lst is not None:
         top_5 = get_top_k_similar_ingredients(
                 recon_vector,
@@ -267,7 +268,10 @@ def inference(
         print("Top-5 similar ingredients:")
         for ingr_name, score in top_5:
             print(f"  {ingr_name} (cos_sim={score:.4f})")
-
+            sub.append(ingr_name)
+        
     else:
         print("[주의] ingredient_embeddings / ingredient_lst가 없습니다. "
               "코사인 유사도 Top-5를 계산하려면 이 두 변수가 필요합니다.")
+    
+    return sub
