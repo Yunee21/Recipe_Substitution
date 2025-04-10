@@ -39,6 +39,9 @@ def node2id(node: str, data: list) -> int:
 def eng2ko(word: str):
     return GoogleTranslator(source='en', target='ko').translate(word)
 
+def ko2eng(word: str):
+    return GoogleTranslator(source='ko', target='en').translate(word)
+    
 def calBMI(weight, height):
     return float(weight) / (float(height)*float(height))
 
