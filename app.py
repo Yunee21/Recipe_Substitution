@@ -300,7 +300,7 @@ if selected == "대체 레시피 추천" and st.session_state["submitted"]:
     st.markdown("---")
     st.markdown("## 🍽️ 대체 레시피 추천 결과")
     st.markdown("#### 🧾 원본 재료")
-    st.markdown('chicken thighs')
+    st.markdown(uts.eng2ko('chicken thighs'))
     st.markdown("#### 🍳 대체 재료 후보들")
     subingre_ko_lst = [uts.eng2ko(ingre_en) for ingre_en in sub]
     st.markdown(subingre_ko_lst)
