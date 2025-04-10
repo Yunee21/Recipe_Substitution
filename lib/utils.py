@@ -262,7 +262,7 @@ def inference(
                 recon_vector,
                 ingredient_embeddings.to(device),
                 ingredient_lst,
-                k=10
+                k=100
         )
 
         print("Top-5 similar ingredients:")
