@@ -315,23 +315,14 @@ if selected == "대체 레시피 추천" and st.session_state["first_submitted"]
         cleaned_instructions = [step for step in instructions if isinstance(step, str)]
         numbered_clean = "\n".join([f"{i+1}. {step}" for i, step in enumerate(cleaned_instructions)])
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("### 기존 레시피")
-            with st.expander("재료", expanded=True):
-                st.dataframe(recipe_df['재료'], use_container_width=True)
-            with st.expander("조리방법", expanded=True):
-                st.markdown(numbered_clean)
-
-        with col2:
-            st.markdown("### 대체 레시피")
-            with st.expander("재료", expanded=True):
-                recipe_df.at[0, '재료'] = '*** 애호박 ***'
-                recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
-                st.dataframe(recipe_df['재료'], use_container_width=True)
-            with st.expander("조리방법", expanded=True):
-                directions = """1. 애호박은 반으로 갈라 어슷하게 썬다. \n2. 느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다. \n3. 팬에 들기름을 두르고 마늘을 볶아 향을 낸다. \n4. 애호박과 느타리버섯을 넣고 중불에서 볶는다. \n5. 간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다. \n6. 불을 끄고 쪽파를 넣어 마무리한다."""
-                st.markdown(directions)
+        recipe_df.at[0, '재료'] = '*** 애호박 ***'
+        recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
+        st.dataframe(recipe_df['재료'], use_container_width=True)
+    
+        st.markdown("#### 🍳 조리 방법")
+        directions = """1. 애호박은 반으로 갈라 어슷하게 썬다. \n2. 느타리버섯은 밑동을 제거한 후 손으로 길게 찢는다. \n3. 팬에 들기름을 두르고 마늘을 볶아 향을 낸다. \n4. 애호박과 느타리버섯을 넣고 중불에서 볶는다. \n5. 간장, 고춧가루, 물을 넣고 뚜껑을 덮은 후 약불에서 2~3분간 졸인다. \n6. 불을 끄고 쪽파를 넣어 마무리한다."""
+        st.markdown(directions)
+            
     
         st.success("질환에 맞춘 건강한 레시피입니다!")
 
