@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from lib import utils as uts
 
+
 # %%
 # -----------------------------
 # 📌 상태 초기화
@@ -143,6 +144,8 @@ with st.sidebar:
 # -----------------------------
 # 👤 프로필 입력
 # -----------------------------
+kidney_stage = ''
+
 if selected == "프로필 입력":
     with st.expander("1) 프로필 입력", expanded=True):
         st.markdown("### 👥 신체 정보")
@@ -169,6 +172,8 @@ if selected == "프로필 입력":
             elif egfr < 15: kidney_stage = "5단계"
             kidney_dialysis = st.selectbox("투석 여부", ["비투석", "복막투석", "혈액투석"])
 
+cond_vec = uts.getNutLabels(kidney_stage)
+
 # -----------------------------
 # 🧺 보유 식재료 입력
 # -----------------------------
@@ -185,6 +190,8 @@ elif selected == "보유 식재료 입력":
 # -----------------------------
 # 🍳 레시피 입력
 # -----------------------------
+recipe_name = ''
+
 elif selected == "레시피 입력":
     with st.expander("3) 레시피 입력", expanded=True):
         recipe_file_path = "recipe.xlsx"
@@ -205,6 +212,10 @@ elif selected == "레시피 입력":
                     st.markdown(recipe["조리방법"])
                 else:
                     st.warning("일치하는 레시피명이 없습니다.")
+
+
+
+
 
 # -----------------------------
 # ✅ 제출
