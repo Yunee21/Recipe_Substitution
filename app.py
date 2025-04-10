@@ -129,11 +129,11 @@ with st.sidebar:
             if not is_disabled:
                 set_menu(name)
 
-        # 스타일 적용된 메뉴 표시
+        /* # 스타일 적용된 메뉴 표시
         st.markdown(
             f"<div class='{' '.join(class_names)}'>{icon} {name}</div>",
             unsafe_allow_html=True
-        )
+        ) */
 
     st.markdown("---")
     st.markdown("""
