@@ -248,7 +248,7 @@ elif selected == "레시피 입력":
                 st.markdown("#### 🍳 조리 방법")
                 st.markdown(direc_ko_lst)
 
-                st.session_state["recipe_name_ko"] = recipe_name_ko
+                st.session_state["recipe_name_ko"] = recipe_dct[recipe_name_en]
 
             else:
                 st.warning("일치하는 레시피명이 없습니다.")
@@ -278,6 +278,24 @@ if st.button("제출"):
 # 🍽️ 대체 레시피 추천
 # -----------------------------
 if selected == "대체 레시피 추천" and st.session_state["submitted"]:
+    recipe_dct = uts.loadPickle(recipe_file_path)
+    target_recipe = st.session_state["recipe_name_ko"]
+    target_recipe['nutrition_label_encodings'] = st.session_state["cond_vec"]
+
+    # Pre-processing
+    ingredient_node = uts.loadPickle("data/ingredient_node.pkl")
+    direction_node  = uts.loadPickle("data/direction_node.pkl")
+    recipe_data = uts.createHeteroGraph(target_recipe, ingredient_node, direction_node, device)
+
+    inference(
+            test_graph=recipe_data,
+            model_path="gnn/results/best_model.pt",
+            recipe_graph_path="gnn/results/recipe_graphs_lst.pkl",
+            ingredient_node=ingredient_node,
+            mask_indices=target_recipe['mask_indices']
+        )
+
+
     st.markdown("---")
     st.markdown("## 🍽️ 대체 레시피 추천 결과")
 
