@@ -1,4 +1,5 @@
 # %%
+# %%
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,7 +8,7 @@ import random
 from lib import utils as uts
 import time
 
-
+# %%
 device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
 seed = 721
 random.seed(seed)
@@ -131,26 +132,28 @@ with st.sidebar:
         is_selected = (selected == name)
         is_disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
 
-        class_names = ["menu-button"]
-        if is_selected:
-            class_names.append("selected")
-        if is_disabled:
-            class_names.append("disabled")
+        button_label = f"{icon} {name}"
 
-        # 버튼 클릭 처리만 실제로 감지 (표시는 안 보임)
+        button_style = "selected" if is_selected else ""
+        if is_disabled:
+            button_style += " disabled"
+
+        # 버튼을 div로 감싸서 스타일 클래스 강제 부여
+        st.markdown(
+            f"""
+            <div class="menu-button {'selected' if is_selected else ''} {'disabled' if is_disabled else ''}">
+                <form action="#">
+                    <button type="submit" name="menu" value="{name}" {'disabled' if is_disabled else ''} class="{'selected' if is_selected else ''}">{icon} {name}</button>
+                </form>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # 버튼 클릭 처리
         if st.button(f"{icon} {name}", key=f"click_{name}"):
             if not is_disabled:
                 set_menu(name)
-        
-
-
-    st.markdown("---")
-    st.markdown("""
-        <div class='sidebar-description'>
-        1. 프로필, 보유 식재료, 레시피 정보를 입력하고 제출해주세요.<br>
-        2. 제출 후 '대체 레시피 추천' 메뉴에서 추천 결과를 확인할 수 있습니다.
-        </div>
-    """, unsafe_allow_html=True)
 
 # -----------------------------
 # 👤 프로필 입력
@@ -327,4 +330,6 @@ if selected == "대체 레시피 추천" and st.session_state["first_submitted"]
             
     
         st.success("질환에 맞춘 건강한 레시피입니다!")
+
+
 
