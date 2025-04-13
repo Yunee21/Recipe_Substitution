@@ -344,7 +344,8 @@ def recommend_page():
     # -----------------------
     # 1. 선택된 레시피 불러오기
     # -----------------------
-    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+    recipe_dct = load_recipe_dct()
+
     name_eng = st.session_state["selected_recipe_name_eng"]
     name_ko = st.session_state["selected_recipe_name_ko"]
     recipe_info = recipe_dct[name_eng]
