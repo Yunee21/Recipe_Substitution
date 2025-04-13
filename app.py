@@ -193,7 +193,7 @@ def profile_page():
             kidney_stage = st.selectbox("단계 선택", ["1단계", "2단계", "3단계", "4단계", "5단계", "혈액투석", "복막투석"])
         else:
             egfr = st.number_input("eGFR 수치", 0.0, 200.0, step=0.1)
-            kidney_stage = uts.inferStageFromEgfr(egfr)
+            kidney_stage = inferStageFromEgfr(egfr)
 
         st.session_state.update({
             "gender": gender,
