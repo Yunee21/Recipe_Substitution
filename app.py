@@ -110,42 +110,39 @@ def sidebar_menu():
 
     with st.sidebar:
         st.markdown("### 메뉴 선택")
-
         for name, icon in menu_items.items():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
 
-            button_html = f"""
-            <div style="margin-bottom: 10px;">
-                <form action="" method="post">
-                    <button type="submit" name="menu" value="{name}"
-                        style="
-                            width: 100%;
-                            background-color: {'#ba3d60' if is_selected else '#ffe6ed'};
-                            color: {'white' if is_selected else '#ba3d60'};
-                            padding: 10px 14px;
-                            border: none;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            font-weight: 600;
-                            cursor: {'not-allowed' if disabled else 'pointer'};
-                            opacity: {0.5 if disabled else 1};
-                        "
-                        {'disabled' if disabled else ''}
-                    >
-                        {icon} {name}
-                    </button>
-                </form>
-            </div>
-            """
+            btn_key = f"menu_{name}"
+            btn_clicked = st.button(f"{icon} {name}", key=btn_key, disabled=disabled)
 
-            # 클릭 이벤트 수동 처리
-            st.markdown(button_html, unsafe_allow_html=True)
+            # 버튼 누르면 상태 업데이트
+            if btn_clicked:
+                st.session_state["selected_menu"] = name
 
-        # 메뉴 선택된 경우 session_state에 반영
-        if 'menu' in st.experimental_get_query_params():
-            selected = st.experimental_get_query_params()['menu'][0]
-            st.session_state["selected_menu"] = selected
+            # CSS 추가 (현재 선택된 버튼에만 적용)
+            st.markdown(f"""
+            <style>
+            div[data-testid="stButton"][id="{btn_key}"] button {{
+                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
+                color: {'white' if is_selected else '#ba3d60'} !important;
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 14px;
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: left;
+                transition: background-color 0.3s ease;
+            }}
+            div[data-testid="stButton"][id="{btn_key}"] button:hover {{
+                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
+            }}
+            </style>
+            """, unsafe_allow_html=True)
+
 
 
 # -----------------------
