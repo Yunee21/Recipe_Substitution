@@ -82,8 +82,9 @@ def inject_custom_css():
     }
 
     .box-section.active {
-        background-color: #ba3d60 !important;
-        color: white !important;
+        background-color: transparent !important;
+        /* 또는 흐린 색 */
+        color: black !important;
     }
 
     .box-section.active h1,
