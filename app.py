@@ -109,9 +109,34 @@ def sidebar_menu():
 
     with st.sidebar:
         st.markdown("### 메뉴 선택")
+
         for name, icon in menu_items.items():
+            is_active = st.session_state["selected_menu"] == name
+            button_style = f"""
+                <style>
+                    div[data-testid="stButton"][id="menu_{name}"] button {{
+                        background-color: {"#ba3d60" if is_active else "transparent"};
+                        color: {"white" if is_active else "#ba3d60"};
+                        font-weight: 600;
+                        font-size: 16px;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 10px 14px;
+                        margin-bottom: 10px;
+                        width: 100%;
+                        text-align: left;
+                        transition: background-color 0.3s ease;
+                    }}
+                    div[data-testid="stButton"][id="menu_{name}"] button:hover {{
+                        background-color: {"#a93554" if is_active else "#f8d4dd"};
+                        color: white;
+                    }}
+                </style>
+            """
+            st.markdown(button_style, unsafe_allow_html=True)
+
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
-            if st.button(f"{icon} {name}", disabled=disabled, key=f"menu_{name}"):
+            if st.button(f"{icon} {name}", key=f"menu_{name}", disabled=disabled):
                 st.session_state["selected_menu"] = name
 
 # -----------------------
