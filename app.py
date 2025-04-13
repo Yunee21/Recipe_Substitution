@@ -232,19 +232,14 @@ def ingredient_page():
 @st.cache_resource
 def load_recipe_dct():
     return uts.loadPickle("data/recipe_graph_dct.pkl")
+    
+recipe_dct = load_recipe_dct()
 
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
     with st.container():
         st.markdown(f'<div class="{box_class}">', unsafe_allow_html=True)
         st.markdown("### 🍳 레시피 입력")
-
-        try:
-            recipe_dct = load_recipe_dct()
-
-        except:
-            recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
-            ko_to_eng = {k: k for k in recipe_names_ko}
 
         # ✅ 1. 입력창
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
@@ -294,8 +289,6 @@ def recommend_page():
     # -----------------------
     # 1. 선택된 레시피 불러오기
     # -----------------------
-    recipe_dct = load_recipe_dct()
-
     name_eng = st.session_state["selected_recipe_name_eng"]
     name_ko = st.session_state["selected_recipe_name_ko"]
     recipe_info = recipe_dct[name_eng]
