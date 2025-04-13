@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import random
 import time
+from difflib import get_close_matches
 from lib import utils as uts
 
 # -----------------------
@@ -152,25 +153,36 @@ def profile_page():
             if gender and height and weight and kidney_stage:
                 st.success("프로필 정보를 입력받았습니다.")
                 st.session_state["profile_done"] = True
+                st.session_state["first_submitted"] = True
         st.markdown('</div>', unsafe_allow_html=True)
+
 # -----------------------
 # 🧺 보유 식재료 입력
 # -----------------------
+def add_ingredient():
+    ingre = st.session_state["new_ingre"]
+    if ingre:
+        st.session_state["ingredients"].append(ingre)
+        st.session_state["new_ingre"] = ""  # 입력창 초기화
+
 def ingredient_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "보유 식재료 입력" else "box-section"
     with st.container():
         st.markdown(f'<div class="{box_class}">', unsafe_allow_html=True)
         st.markdown("### 🧺 보유 식재료 입력")
 
-        ingre = st.text_input("보유 식재료를 입력하세요", placeholder="예: 두부")
-        if ingre:
-            st.session_state["ingredients"].append(ingre)
-            st.experimental_rerun()
+        st.text_input(
+            "보유 식재료를 입력하세요",
+            key="new_ingre",
+            placeholder="예: 두부",
+            on_change=add_ingredient
+        )
 
         if st.session_state["ingredients"]:
             st.markdown("#### 입력된 식재료 목록")
-            st.table(pd.DataFrame(st.session_state["ingredients"], columns=["식재료"]))
+            st.dataframe(pd.DataFrame(st.session_state["ingredients"], columns=["식재료"]), use_container_width=True)
             st.session_state["ingredient_done"] = True
+
         st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------
@@ -184,14 +196,22 @@ def recipe_input_page():
 
         try:
             recipe_dct = uts.loadPickle("data/recipe_dct.pkl")
-            recipe_names_ko = [uts.eng2ko(k) for k in recipe_dct.keys()]
+            recipe_names_eng = list(recipe_dct.keys())
+            recipe_names_ko = [uts.eng2ko(k) for k in recipe_names_eng]
         except:
             recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
 
-        selected_recipe = st.selectbox("레시피명 검색", options=recipe_names_ko)
+        user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
+
+        suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
+        if suggestions:
+            selected_recipe = st.selectbox("자동 완성된 추천 목록", suggestions, key="recipe_select")
+        else:
+            selected_recipe = None
+
         if selected_recipe:
-            st.session_state["recipe_done"] = True
             st.success(f"'{selected_recipe}' 레시피 선택됨")
+            st.session_state["recipe_done"] = True
         st.markdown('</div>', unsafe_allow_html=True)
 
 
