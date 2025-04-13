@@ -58,6 +58,10 @@ def inject_custom_css():
         border-radius: 8px;
         cursor: pointer;
     }
+    .menu-button.selected {
+        background-color: #ba3d60 !important;
+        color: white !important;
+    }
 
     .stButton>button:hover {
         background-color: #f8d4dd;
