@@ -68,24 +68,20 @@ def inject_custom_css():
         pointer-events: none;
     }
 
-    /* 🧺 Section 스타일링 */
     .box-section {
         background-color: #ffe6ed;
         padding: 1.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
-        min-height: 350px; /* 동일한 크기 유지 */
         transition: background-color 0.3s ease;
-        color: #000000;  /* 기본 글씨색: 검정 */
+        color: #000000;
     }
 
     .box-section.active {
         background-color: #ba3d60 !important;
         color: white !important;
-        /* min-height 제거! */
     }
 
-    /* 내부 텍스트도 흰색 */
     .box-section.active h1,
     .box-section.active h2,
     .box-section.active h3,
@@ -96,6 +92,7 @@ def inject_custom_css():
     }
     </style>
     """, unsafe_allow_html=True)
+
 
 # -----------------------
 # 📋 사이드바 메뉴
