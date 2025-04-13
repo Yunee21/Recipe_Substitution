@@ -3,170 +3,296 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch_geometric
 from torch_geometric.data import HeteroData
-from torch_geometric.nn import HANConv
+from torch_geometric.nn import HANConv, AttentionalAggregation
+
 
 class HeteroEncoderHAN(nn.Module):
-    def __init__(self, ingre_feat_dim, direc_feat_dim, hidden_dim, latent_dim, cond_dim, metadata, heads=1, dropout=0.0):
-        """
-        Args:
-            - ingre_feat_dim: ingredient 노드 입력 feature 차원 (예: 16)
-            - direc_feat_dim: direction 노드 입력 feature 차원 (예: 8)
-            - hidden_dim:     HANConv의 출력 차원 (모든 노드에 대해 동일한 차원, 예: 32)
-            - latent_dim:     잠재 공간 차원
-            - cond_dim:       조건 벡터 차원 (예: nutrition_label 차원, 8)
-            - metadata:       (node_types, edge_types) tuple
-                              (['ingredient', 'direction'],
-                               ['ingredient', 'co_occurs_with', 'direction'],
-                               ['ingredient', 'used_in', 'direction'],
-                               ['direction', 'contains', 'ingredient'],
-                               ['direction', 'pairs_with', 'direction'],
-                               ['direction', 'follows', 'direction'])
-            - heads:          HANConv의 attention head 수 (기본 1)
-            - dropout:        dropout ratio
-        """
+    def __init__(self, ingre_fv_dim, direc_fv_dim, hidden_dim, latent_dim, metadata, heads=1, dropout=0.0):
         super().__init__()
 
-        # in_channels를 dictionary로 설정
-        in_channels = {'ingredient': ingre_feat_dim, 'direction': direc_feat_dim}
 
-        if (hidden_dim % heads != 0):
-            raise RuntimeError("hidden_dim을 heads로 나누어 떨어지게 설정해야 합니다.")
+        layer_mode = ['1layer', '2layer', '3layer']
+        output_mode = ['node', 'graph', 'together']
 
-        self.han_conv = HANConv(in_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
+        self.layer_mode = layer_mode[1]
+        self.output_mode = output_mode[0]
 
-        # 최종 graph-level representation은 ingredient와 direction의 pooled 벡터와 condition vector를 결합
-        # 총 차원: 2 * hidden_dim + cond_dim
-        self.fc_mu = nn.Linear(2 * hidden_dim + cond_dim, latent_dim)
-        self.fc_logvar = nn.Linear(2 * hidden_dim + cond_dim, latent_dim)
+        self.metadata = metadata
 
-    def forward(self, data: HeteroData, cond: torch.Tensor):
-        # x_dict: 각 노드 타입별 입력 feature (dictionary)
-        x_dict = {
-                'ingredient': data['ingredient'].x,
-                'direction': data['direction'].x
-        }
+        assert hidden_dim % heads == 0, "hidden_dim must be divisible by number of heads."
 
-        # edge_index_dict: metadata에 포함된 각 관계에 대해 edge_index를 dictionary로 구성
-        edge_index_dict = {}
-        for key in data.edge_types:
-            edge_index_dict[key] = data[key].edge_index
+        # Define input and intermediate channel dictionaries
+        in_channels = {'ingredient': ingre_fv_dim, 'direction': direc_fv_dim}
+        inter_channels = {ntype: hidden_dim for ntype in in_channels}
 
-        # HANConv: 입력 dictionary와 edge_index dictionary를 받아 각 노드 타입의 임베딩 출력 (dictionary)
-        x_out = self.han_conv(x_dict, edge_index_dict)
+        # HANConv Layers
+        self.han1 = HANConv(in_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
 
-        # Global mean pooling: 각 노드 타입별로 임베딩 벡터들의 평균 계산
-        ingre_pool = x_out['ingredient'].mean(dim=0, keepdim=True)   # [1, hidden_dim]
-        direc_pool = x_out['direction'].mean(dim=0, keepdim=True)    # [1, hidden_dim]
+        if layer_mode in ['2layer', '3layer']:
+            self.han2 = HANConv(inter_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
 
-        # Condition vector: [cond_dim] -> [1, cond_dim]
-        cond = cond.unsqueeze(0)
+        if layer_mode == '3layer':
+            self.han3 = HANConv(inter_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
 
-        # Concatenate pooled embeddings와 condition vector: [1, 2 * hidden_dim + cond_dim]
-        graph_repr = torch.cat([ingre_pool, direc_pool, cond], dim=1)
+        '''
+        # Graph-level pooling
+        self.pool_ingre = AttentionalAggregation(
+            gate_nn=nn.Sequential(nn.Linear(hidden_dim, 1), nn.Tanh())
+        )
+        self.pool_direc = AttentionalAggregation(
+            gate_nn=nn.Sequential(nn.Linear(hidden_dim, 1), nn.Tanh())
+        )
+        '''
 
-        mu = self.fc_mu(graph_repr)          # [1, latent_dim]
-        logvar = self.fc_logvar(graph_repr)  # [1, latent_dim]
-        return mu, logvar
+        # GNN 1-layer
+        in_channels = {'ingredient': ingre_fv_dim, 'direction': direc_fv_dim}
+
+        self.han1 = HANConv(in_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
+
+        # GNN 2-layer
+        in_channels = {'ingredient': ingre_fv_dim, 'direction': direc_fv_dim}
+        inter_channels = {ntype: hidden_dim for ntype in in_channels}
+
+        self.han1 = HANConv(in_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
+        self.han2 = HANConv(inter_channels, hidden_dim, heads=heads, dropout=dropout, metadata=metadata)
+
+        if self.output_mode == 'graph' :
+            # graph-level embedding (pooled ingredient + direction)
+            self.fc_mu = nn.Linear(2 * hidden_dim, latent_dim)
+            self.fc_logvar = nn.Linear(2 * hidden_dim, latent_dim)
+
+        # node-level embedding
+        if self.output_mode == 'node':
+            self.fc_mu = nn.Linear(hidden_dim, latent_dim)
+            self.fc_logvar = nn.Linear(hidden_dim, latent_dim)
+
+        # graph-level + node-level embedding
+        if self.output_mode == 'together':
+            self.fc_mu = nn.Linear(3 * hidden_dim, latent_dim)
+            self.fc_logvar = nn.Linear(3 * hidden_dim, latent_dim)
+
+        # Deep Layer
+        self.mlp_mu = nn.Sequential(
+            nn.Linear(2 * hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, latent_dim)
+        )
+
+    def forward(self, data):
+        x_dct = {'ingredient': data['ingredient'].x, 'direction': data['direction'].x}
+
+        edge_index_dct = {edge_type: data[edge_type].edge_index for edge_type in data.edge_types}
+
+        # GNN 1-layer
+        x2 = self.han1(x_dct, edge_index_dct)
+
+
+        # GNN 2-layer
+        x1 = self.han1(x_dct, edge_index_dct)
+        x2 = self.han2(x1, edge_index_dct)
+
+
+        # masking
+        mask = data['ingredient'].mask
+        assert mask.sum() > 0, "No masked ingredient nodes found in the batch!"
+        masked_node_idx = mask.nonzero(as_tuple=True)[0]  # shape: [k]
+
+        if len(masked_node_idx) == 1:
+            masked_node_emb = x2['ingredient'][masked_node_idx[0]].unsqueeze(0)  # shape: [1, hidden_dim]
+        else:
+            masked_node_emb = x2['ingredient'][masked_node_idx]  # shape: [k, hidden_dim]
+
+
+        # Transfer the neighbors information to decoder (1-hop neighbors from 'co_occurs_with')
+        adj = edge_index_dct[('ingredient', 'co_occurs_with', 'ingredient')]
+
+        neighbors = []
+        for idx in masked_node_idx:
+            neigh = adj[1][adj[0] == idx]
+            if neigh.numel() > 0:  # 빈 텐서는 넣지 않음
+                neighbors.append(neigh)
+
+        if len(neighbors) > 0:
+            neighbors = torch.cat(neighbors)
+        else:
+            neighbors = torch.empty(0, dtype=torch.long, device=adj.device)
+
+        if neighbors.numel() > 0:
+            context = x2['ingredient'][neighbors].mean(dim=0, keepdim=True)
+        else:
+            context = torch.zeros(1, x2['ingredient'].size(1), device=x2['ingredient'].device)
+
+        '''
+        # graph-level ([k, 2*hidden_dim])
+        ingre_pool = x2['ingredient'].mean(dim=0, keepdim=True)
+        direc_pool = x2['direction'].mean(dim=0, keepdim=True)
+
+        graph_repr = torch.cat([ingre_pool, direc_pool], dim=1)
+
+        mu = self.fc_mu(graph_repr)
+        logvar = self.fc_logvar(graph_repr)
+        '''
+
+        # node-level ([k, hidden_dim])
+        mu = self.fc_mu(masked_node_emb)
+        logvar = self.fc_logvar(masked_node_emb)
+
+        '''
+        # node-graph-level ([k, hidden_dim + 2*hidden_dim])
+        graph_repr = graph_repr.expand(masked_node_emb.size(0), -1)
+        encoder_input = torch.cat([masked_node_emb, graph_repr], dim=1)
+
+        mu = self.fc_mu(encoder_input)
+        logvar = self.fc_mu(encoder_input)
+        '''
+
+        return mu, logvar, context
 
 
 class HeteroDecoder(nn.Module):
-    def __init__(self, latent_dim, cond_dim, hidden_dim, ingre_out_dim, num_of_ingre):
-        """
-        Args:
-            - latent_dim: 잠재 공간 차원 (인코더의 z 차원)
-            - cond_dim: 조건 벡터 차원   (예: nutrition_label 차원)
-            - hidden_dim: 중간 hidden 차원
-            - ingre_out_dim: 재료 노드 출력 feature 차원 (입력과 동일, 예: 16)
-            - num_of_ingre: 복원할 ingredient 노드의 총 개수 (패딩을 고려해 고정)
-
-        Role:
-            - 인코더에서 생성한 잠재 벡터(z)와 조건 벡터(c)로부터 ingredient 노드의 feature들을 복원
-
-        Note:
-            - 전체 재료 노드를 복원하는 방식:
-                - 모델이 전체 레시피(6개 재료)의 재구성 결과를 출력하고,
-                  loss는 오직 마스킹된 노드(예: 인덱스 i)에 대해서만 계산하는 경우,
-                  decoder의 출력은 6×ingre_out_dim이 되고,
-                  이후 마스킹된 노드 부분만 선택하여 비교합니다.
-                - 전체적인 구조 학습 우수, 일반화 가능
-            - 마스킹된 노드만 복원하는 방식:
-                - 모델이 오직 마스킹된 노드만 재구성하도록 설계한 경우,
-                  decoder의 출력은 직접 1×ingre_out_dim이 됩니다
-                - 계산 효율성, 주변 노드들 간의 관계나 전체적인 구조 반영 어려움
-        """
+    def __init__(self, latent_dim, context_dim, hidden_dim, out_dim):
         super().__init__()
-        self.num_of_ingre = num_of_ingre
-        self.ingre_out_dim = ingre_out_dim
+        '''
+        self.mlp = nn.Sequential(
+            nn.Linear(context_dim + context_dim, hidden_dim),
+            #nn.ReLU(),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
 
-        # MLP
-        self.fc1 = nn.Linear(latent_dim + cond_dim, hidden_dim)
-        #self.fc2 = nn.Linear(hidden_dim, num_of_ingre * ingre_out_dim)
-        self.fc2 = nn.Linear(hidden_dim, ingre_out_dim)
+            nn.Linear(context_dim + hidden_dim, hidden_dim),
+            #nn.ReLU(),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
 
-        self.fc3 =  nn.Linear(latent_dim, hidden_dim)
+            nn.Linear(context_dim + hidden_dim, hidden_dim),
+            # nn.ReLU(),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
 
-    def forward(self, z, cond):
-        # z: [batch, latent_dim] (여기서는 보통 batch=1)
+            nn.Linear(context_dim, hidden_dim),
+            #nn.ReLU(),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
 
-        # 조건 벡터를 배치 차원으로 확장
-        cond = cond.unsqueeze(0)  # [1, cond_dim]
+            nn.Linear(hidden_dim, out_dim),
+            #nn.ReLU()  # It causes non-negative value
+            #nn.Tanh()
+        )
+        '''
+        self.latent_dim = latent_dim
+        self.context_dim = context_dim
 
-        # latent와 condition 벡터 결합
-        z_cond = torch.cat([z, cond], dim=1)  # [1, latent_dim + cond_dim]
+        self.fc1 = nn.Linear(latent_dim + context_dim, hidden_dim)
+        self.norm1 = nn.LayerNorm(hidden_dim)
+        self.act1 = nn.LeakyReLU(0.1)
 
-        h = F.relu(self.fc1(z_cond))
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.norm2 = nn.LayerNorm(hidden_dim)
+        self.act2 = nn.LeakyReLU(0.1)
 
-        out = self.fc2(h)  # [1, num_ingre * ingre_out_dim]
-        out = torch.tanh(out)
+        self.fc4 = nn.Linear(hidden_dim, hidden_dim)
+        self.norm4 = nn.LayerNorm(hidden_dim)
+        self.act4 = nn.LeakyReLU(0.1)
 
-        h = F.relu(self.fc3(z))
-        out = torch.tanh(self.fc2(h))
+        self.fc5 = nn.Linear(hidden_dim, hidden_dim)
+        self.norm5 = nn.LayerNorm(hidden_dim)
+        self.act5 = nn.LeakyReLU(0.1)
+
+        self.fc3 = nn.Linear(hidden_dim + latent_dim, hidden_dim)
+        self.norm3 = nn.LayerNorm(hidden_dim)
+        self.act3 = nn.LeakyReLU(0.1)
+
+        self.out_layer = nn.Linear(hidden_dim, out_dim)
+
+
+    def forward(self, z_and_context):
+        #return self.mlp(z_and_context)
+        # z_and_context: [batch, latent + context]
+        zc = z_and_context
+
+        # split context for reuse
+        z = zc[:, :self.latent_dim]
+        context = zc[:, -self.context_dim:]  # [latent_dim:]
+
+        noisy_context = context + 0.05 * torch.randn_like(context)
+
+        h = self.fc1(zc)
+        h = self.act1(h)
+        h = self.norm1(h)
+
+        '''
+        #h = torch.cat([h, context], dim=-1)
+        h = self.fc2(h)
+        h = self.act2(h)
+        h = self.norm2(h)
+
+        h = self.fc4(h)
+        h = self.act4(h)
+        h = self.norm4(h)
+
+        h = self.fc5(h)
+        h = self.act5(h)
+        h = self.norm5(h)
+
+        h = torch.cat([h, z], dim=-1)
+        h = self.fc3(h)
+        h = self.act3(h)
+        h = self.norm3(h)
+        '''
+
+        out = self.out_layer(h)
         return out
 
-        # 재구성된 ingredient feature들을 [num_ingre, ingre_out_dim]로 reshape
-        #recon_ingre = out.view(self.num_of_ingre, self.ingre_out_dim)
 
-        #return recon_ingre
-
-
-# Conditional Variational Heterogeneous Graph AutoEncoder 모델
-class ConditionalHeteroGraphVAE(nn.Module):
-    def __init__(self, ingre_feat_dim, direc_feat_dim, hidden_dim, latent_dim, cond_dim, ingre_out_dim, num_of_ingre, metadata, heads=1, dropout=0, num_ingredient_classes=1):
-        """
-        Args:
-            - ingre_feat_dim: ingredient 입력 feature 차원
-            - dire_feat_dim:  direction 입력 feature 차원
-            - hidden_dim:     내부 hidden 차원
-            - latent_dim:     잠재 벡터 차원
-            - cond_dim:       조건 벡터 차원
-            - ingre_out_dim:  재구성된 ingredient feature 차원 (보통 ingre_in_dim과 동일)
-            - num_of_ingre:      각 레시피에 대해 고정된 ingredient 노드 수 (패딩 포함)
-
-        Role:
-            Encoder와 Decoder를 하나의 모델로 결합하고,
-            reparameterization 기법을 사용하여 z를 샘플링한 후 Decoder로 전달합니다.
-        """
+class ContextualHeteroGraphVAE(nn.Module):
+    def __init__(self, ingre_fv_dim, direc_fv_dim, hidden_dim, latent_dim, out_dim, metadata, heads=1, dropout=0.0):
         super().__init__()
-        self.encoder = HeteroEncoderHAN(ingre_feat_dim, direc_feat_dim, hidden_dim, latent_dim, cond_dim, metadata, heads=heads, dropout=dropout)
-        self.decoder = HeteroDecoder(latent_dim, cond_dim, hidden_dim, ingre_out_dim, num_of_ingre)
+        self.encoder = HeteroEncoderHAN(
+            ingre_fv_dim=ingre_fv_dim,
+            direc_fv_dim=direc_fv_dim,
+            hidden_dim=hidden_dim,
+            latent_dim=latent_dim,
+            metadata=metadata,
+            heads=heads,
+            dropout=dropout
+        )
+        self.decoder = HeteroDecoder(
+            latent_dim=latent_dim,
+            context_dim=hidden_dim,  # context is from ingredient neighborhood
+            hidden_dim=hidden_dim,
+            out_dim=out_dim  # ingredient feature dim
+        )
 
     def reparameterize(self, mu, logvar):
+        '''
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
         return mu + eps * std
+        '''
+        num_samples = 5
+        std = torch.exp(0.5 * logvar)  # [B, D]
+        B, D = mu.size()
 
-    def forward(self, data: HeteroData):
-        # data에서 condition vector는 data.nutrition_label로 제공된다고 가정
-        cond = data.nutrition_label          # [cond_dim]
+        eps = torch.randn((num_samples, B, D), device=mu.device)  # [K, B, D]
+        z_samples = mu.unsqueeze(0) + eps * std.unsqueeze(0)       # [K, B, D]
 
-        # compute distribution
-        mu, logvar = self.encoder(data, cond)
+        z_mean = z_samples.mean(dim=0)  # [B, D] ← 평균 over K
+        return z_mean
 
-        # sampling in distribution
-        z = self.reparameterize(mu, logvar)  # [1, latent_dim]
+    def forward(self, data):
+        mu, logvar, ingre_context = self.encoder(data)
+        z = self.reparameterize(mu, logvar)  # shape: [k, latent_dim]
 
-        # reconstruction the graph
-        #recon_ingre = self.decoder(z, cond)  # [num_ingre, ingre_out_dim]
-        recon_ingre = self.decoder(z, cond)  # [1, ingre_out_dim]
+        #z = torch.randn_like(mu) # → 여기서도 복원이 잘 되면, z는 무시당하고 있는 것
 
-        return recon_ingre, mu, logvar
+        if ingre_context.size(0) == 1 and z.size(0) > 1:
+            # broadcast context for multiple masked nodes
+            ingre_context = ingre_context.expand(z.size(0), -1)
+
+        decoder_input = torch.cat([z, ingre_context], dim=-1)  # [k, latent + context]
+        recon = self.decoder(decoder_input)  # [k, out_dim]
+
+        #print("recon stats:", recon.min(), recon.max(), torch.isnan(recon).sum())
+        return recon, mu, logvar
+
+
