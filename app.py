@@ -202,17 +202,20 @@ def profile_page():
         st.markdown("""
         <style>
         div[data-testid="stButton"][id="profile_submit"] > button {
-            background-color: white;
-            border: 2px solid #ba3d60;
-            color: #ba3d60;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 0.5rem 1.2rem;
+            background-color: white !important;
+            color: #ba3d60 !important;
+            border: 2px solid #ba3d60 !important;
+            border-radius: 8px !important;
+            padding: 0.5rem 1.2rem !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: 0.3s ease all !important;
         }
+        
         div[data-testid="stButton"][id="profile_submit"] > button:hover {
-            background-color: #ba3d60;
-            color: white;
+            background-color: #ba3d60 !important;
+            color: white !important;
         }
         </style>
         """, unsafe_allow_html=True)
