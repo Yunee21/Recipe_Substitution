@@ -161,6 +161,13 @@ def sidebar_menu():
 # -----------------------
 # 👤 프로필 입력
 # -----------------------
+def inferStageFromEgfr(egfr):
+    if egfr >= 90: return "1단계"
+    elif egfr >= 60: return "2단계"
+    elif egfr >= 30: return "3단계"
+    elif egfr >= 15: return "4단계"
+    else: return "5단계"
+    
 def profile_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "프로필 입력" else "box-section"
     with st.container():
