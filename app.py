@@ -37,11 +37,15 @@ def init_app():
 def inject_custom_css():
     st.markdown("""
     <style>
-    .stApp { background-color: #ffffff; }
+    .stApp {
+        background-color: #ffffff;
+    }
+
     section[data-testid="stSidebar"] {
         background-color: #ffe6ed;
         padding: 2rem 1rem;
     }
+
     .stButton>button {
         background-color: transparent;
         border: none;
@@ -53,23 +57,39 @@ def inject_custom_css():
         border-radius: 8px;
         cursor: pointer;
     }
+
     .stButton>button:hover {
         background-color: #f8d4dd;
     }
+
     .stButton>button:disabled {
         opacity: 0.4;
         pointer-events: none;
     }
-    
+
+    /* 🧺 Section 스타일링 */
     .box-section {
         background-color: #ffe6ed;
         padding: 1.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
+        min-height: 350px; /* 동일한 크기 유지 */
+        transition: background-color 0.3s ease;
+        color: #000000;  /* 기본 글씨색: 검정 */
     }
 
     .box-section.active {
         background-color: #ba3d60 !important;
+        color: white !important;
+    }
+
+    /* 내부 텍스트도 흰색 */
+    .box-section.active h1,
+    .box-section.active h2,
+    .box-section.active h3,
+    .box-section.active p,
+    .box-section.active label,
+    .box-section.active span {
         color: white !important;
     }
     </style>
