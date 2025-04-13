@@ -211,7 +211,7 @@ def ingredient_page():
         )
 
         if st.session_state["ingredients"]:
-            st.markdown("#### 입력된 식재료 목록 (클릭하면 삭제됩니다)")
+            st.markdown("#### 입력된 식재료 목록 (클릭 시 제거)")
 
             cols = st.columns(3)
             for i, ingre in enumerate(st.session_state["ingredients"]):
@@ -221,10 +221,14 @@ def ingredient_page():
                         key=f"ingre_{i}",
                         on_click=remove_ingredient,
                         args=(ingre,),
-                        help="클릭 시 목록에서 제거됩니다",
+                        help="클릭 시 목록에서 제거됩니다"
                     )
 
-            st.session_state["ingredient_done"] = True
+            # ✅ 제출 버튼 추가
+            if st.button("식재료 제출"):
+                st.session_state["ingredient_done"] = True
+                st.success("식재료가 제출되었습니다!")
+
         st.markdown('</div>', unsafe_allow_html=True)
 
 
