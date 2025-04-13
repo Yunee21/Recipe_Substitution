@@ -297,15 +297,19 @@ def recipe_input_page():
 
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
 
+        # 자동완성 유사 검색
         suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
+
+        selected_recipe = None
         if suggestions:
             selected_recipe = st.selectbox("자동 완성된 추천 목록", suggestions, key="recipe_select")
-        else:
-            selected_recipe = None
 
-        if selected_recipe:
-            st.success(f"'{selected_recipe}' 레시피 선택됨")
+        # ✅ 제출 버튼 추가
+        if selected_recipe and st.button("레시피 제출"):
+            st.session_state["selected_recipe_name"] = selected_recipe
             st.session_state["recipe_done"] = True
+            st.success(f"'{selected_recipe}' 레시피가 제출되었습니다!")
+
         st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -344,7 +348,7 @@ def check_auto_submit():
             st.session_state["selected_menu"] = "대체 레시피 추천"
             st.session_state["submitted"] = True
             st.experimental_rerun()
-
+            
 # -----------------------
 # 🚀 Main App
 # -----------------------
