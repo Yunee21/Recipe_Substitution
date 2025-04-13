@@ -357,18 +357,30 @@ def main():
     inject_custom_css()
     sidebar_menu()
     
+    # st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
+
+    # selected = st.session_state["selected_menu"]
+    # if selected == "프로필 입력":
+    #     profile_page()
+    # elif selected == "보유 식재료 입력":
+    #     ingredient_page()
+    # elif selected == "레시피 입력":
+    #     recipe_input_page()
+    # elif selected == "대체 레시피 추천":
+    #     recommend_page()
+
+    # check_auto_submit()
     st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
-    selected = st.session_state["selected_menu"]
-    if selected == "프로필 입력":
-        profile_page()
-    elif selected == "보유 식재료 입력":
-        ingredient_page()
-    elif selected == "레시피 입력":
-        recipe_input_page()
-    elif selected == "대체 레시피 추천":
-        recommend_page()
+    pages = {
+        "프로필 입력": profile_page,
+        "보유 식재료 입력": ingredient_page,
+        "레시피 입력": recipe_input_page,
+        "대체 레시피 추천": recommend_page
+    }
 
+    selected = st.session_state["selected_menu"]
+    pages[selected]()
     check_auto_submit()
 
 
