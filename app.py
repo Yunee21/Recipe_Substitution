@@ -319,16 +319,27 @@ def recipe_input_page():
         suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
         if suggestions:
-            st.markdown("##### 추천 레시피:")
-            for i, suggestion in enumerate(suggestions):
-                if st.button(suggestion, key=f"suggestion_{i}"):
-                    st.session_state["selected_recipe_name_ko"] = suggestion
-                    st.session_state["selected_recipe_name_eng"] = ko_to_eng[suggestion]
-                    st.session_state["recipe_done"] = True
-                    st.success(f"'{suggestion}' 레시피가 제출되었습니다!")
-                    st.experimental_rerun()
+            selected_recipe = st.selectbox("추천 레시피", suggestions, key="recipe_suggest")
+            st.session_state["recipe_selected"] = selected_recipe
+        else:
+            st.session_state["recipe_selected"] = ""
 
+        if st.button("레시피 제출"):
+            if st.session_state["recipe_selected"]:
+                st.success(f"'{st.session_state['recipe_selected']}' 레시피가 선택되었습니다.")
+                st.session_state["recipe_done"] = True
         st.markdown('</div>', unsafe_allow_html=True)
+        # if suggestions:
+        #     st.markdown("##### 추천 레시피:")
+        #     for i, suggestion in enumerate(suggestions):
+        #         if st.button(suggestion, key=f"suggestion_{i}"):
+        #             st.session_state["selected_recipe_name_ko"] = suggestion
+        #             st.session_state["selected_recipe_name_eng"] = ko_to_eng[suggestion]
+        #             st.session_state["recipe_done"] = True
+        #             st.success(f"'{suggestion}' 레시피가 제출되었습니다!")
+        #             st.experimental_rerun()
+
+        # st.markdown('</div>', unsafe_allow_html=True)
 
 
 
