@@ -290,34 +290,100 @@ def recipe_input_page():
 
         try:
             recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
-            recipe_names_eng = list(recipe_dct.keys())
-            recipe_names_ko = [uts.eng2ko(k) for k in recipe_names_eng]
+            recipe_keys_eng = list(recipe_dct.keys())
+            recipe_names_ko = [uts.eng2ko(k) for k in recipe_keys_eng]
+            ko_to_eng = {uts.eng2ko(k): k for k in recipe_keys_eng}  # 역매핑
         except:
             recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
+            ko_to_eng = {k: k for k in recipe_names_ko}
 
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
 
-        # 자동완성 유사 검색
+        # 자동완성 리스트 생성
         suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
         selected_recipe = None
         if suggestions:
             selected_recipe = st.selectbox("자동 완성된 추천 목록", suggestions, key="recipe_select")
 
-        # ✅ 제출 버튼 추가
-        if selected_recipe and st.button("레시피 제출"):
-            st.session_state["selected_recipe_name"] = selected_recipe
+        if selected_recipe and st.button("레시피 제출", key="recipe_submit"):
+            st.session_state["selected_recipe_name_ko"] = selected_recipe
+            st.session_state["selected_recipe_name_eng"] = ko_to_eng[selected_recipe]
             st.session_state["recipe_done"] = True
             st.success(f"'{selected_recipe}' 레시피가 제출되었습니다!")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
 
+
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
+def getAlternativeIngredients(target):
+    # 실제 구현에서는 알고리즘 모델 기반 추천
+    dummy_map = {
+        "돼지고기": ["두부", "버섯", "닭고기", "계란", "오징어"],
+        "소고기": ["닭고기", "두부", "버섯", "콩단백", "오징어"],
+    }
+    return dummy_map.get(target, ["두부", "버섯", "닭고기", "계란", "오징어"])
+    
 def recommend_page():
     st.markdown("### 🧾 대체 레시피 추천")
+
+    # -----------------------
+    # 1. 선택된 레시피 불러오기
+    # -----------------------
+    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+    name_eng = st.session_state["selected_recipe_name_eng"]
+    name_ko = st.session_state["selected_recipe_name_ko"]
+    recipe_info = recipe_dct[name_eng]
+
+    # 예시 구조: recipe_info = {"재료": [...], "조리법": "...", "대체대상": "돼지고기"}
+    ingredients = recipe_info.get("재료", [])
+    cook_steps = recipe_info.get("조리법", "")
+    target = recipe_info.get("대체대상", ingredients[0])  # 예시용
+
+    st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
+    st.markdown("#### 📦 재료 목록 (파란색은 대체 대상입니다)")
+
+    colored_ingredients = [
+        f"<span style='color:#1f77b4; font-weight:bold;'>{ing}</span>" if ing == target else ing
+        for ing in ingredients
+    ]
+    st.markdown(", ".join(colored_ingredients), unsafe_allow_html=True)
+
+    st.markdown("#### 🍳 조리 방법")
+    st.markdown(cook_steps)
+
+    # -----------------------
+    # 2. 대체 후보 재료 표시
+    # -----------------------
+    st.markdown("#### 🔁 대체할 재료를 선택하세요:")
+    alt_candidates = uts.getAlternativeIngredients(target)  # 예: ['두부', '버섯', '계란', '닭고기', '오징어']
+
+    selected_alt = st.session_state.get("selected_alternative")
+
+    if not selected_alt:
+        cols = st.columns(5)
+        for i, alt in enumerate(alt_candidates):
+            with cols[i]:
+                if st.button(alt, key=f"alt_ingre_{i}"):
+                    st.session_state["selected_alternative"] = alt
+                    st.experimental_rerun()
+    else:
+        # -----------------------
+        # 3. 대체 결과 출력
+        # -----------------------
+        new_ingredients = [selected_alt if i == target else i for i in ingredients]
+        new_steps = cook_steps.replace(target, selected_alt)
+
+        st.markdown("---")
+        st.markdown(f"### ✅ 대체된 레시피: **{name_ko}**")
+        st.markdown("#### 🍽️ 재료 목록")
+        st.markdown(", ".join(new_ingredients))
+
+        st.markdown("#### 🧑‍🍳 조리 방법")
+        st.markdown(new_steps)
 
 
 # -----------------------
