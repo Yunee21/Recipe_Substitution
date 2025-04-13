@@ -58,7 +58,7 @@ def inject_custom_css():
         border-radius: 8px;
         cursor: pointer;
     }
-    .menu-button.selected {
+    .stButton>button.selected {
         background-color: #ba3d60 !important;
         color: white !important;
     }
