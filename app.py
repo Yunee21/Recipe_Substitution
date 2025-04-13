@@ -193,15 +193,29 @@ def profile_page():
             "cond_vec": uts.getNutLabels(kidney_stage),
         })
 
-        if st.button("프로필 제출"):
+        if st.button("프로필 제출", key="profile_submit"):
             if gender and height and weight and kidney_stage:
                 st.success("프로필 정보를 입력받았습니다.")
                 st.session_state["profile_done"] = True
                 st.session_state["first_submitted"] = True
         
-        # 버튼 커스텀 스타일
-        st.markdown('<style>button[kind="primary"] { visibility: hidden; }</style>', unsafe_allow_html=True)
-        st.markdown('<button class="custom-submit-btn">프로필 제출</button>', unsafe_allow_html=True)
+        st.markdown("""
+        <style>
+        div[data-testid="stButton"][id="profile_submit"] > button {
+            background-color: white;
+            border: 2px solid #ba3d60;
+            color: #ba3d60;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 0.5rem 1.2rem;
+        }
+        div[data-testid="stButton"][id="profile_submit"] > button:hover {
+            background-color: #ba3d60;
+            color: white;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
 
 # -----------------------
