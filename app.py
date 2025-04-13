@@ -187,6 +187,12 @@ def profile_page():
 # -----------------------
 # 🧺 보유 식재료 입력
 # -----------------------
+def add_ingredient():
+    ingre = st.session_state["new_ingre"]
+    if ingre:
+        st.session_state["ingredients"].append(ingre)
+        st.session_state["new_ingre"] = ""  # 입력창 초기화
+        
 def remove_ingredient(ingredient):
     if ingredient in st.session_state["ingredients"]:
         st.session_state["ingredients"].remove(ingredient)
