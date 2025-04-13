@@ -90,6 +90,22 @@ def inject_custom_css():
     .box-section.active span {
         color: white !important;
     }
+    .custom-submit-btn {
+        background-color: white !important;
+        color: #ba3d60 !important;
+        border: 2px solid #ba3d60 !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1.2rem !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .custom-submit-btn:hover {
+        background-color: #ba3d60 !important;
+        color: white !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -177,12 +193,30 @@ def profile_page():
             "cond_vec": uts.getNutLabels(kidney_stage),
         })
 
-        if st.button("프로필 제출"):
+        if st.button("프로필 제출", key="profile_submit"):
             if gender and height and weight and kidney_stage:
                 st.success("프로필 정보를 입력받았습니다.")
                 st.session_state["profile_done"] = True
                 st.session_state["first_submitted"] = True
-        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # 스타일 주입
+        st.markdown("""
+        <style>
+        div[data-testid="stButton"][id="profile_submit"] > button {
+            background-color: white;
+            border: 2px solid #ba3d60;
+            color: #ba3d60;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 0.5rem 1.2rem;
+        }
+        div[data-testid="stButton"][id="profile_submit"] > button:hover {
+            background-color: #ba3d60;
+            color: white;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
 # -----------------------
 # 🧺 보유 식재료 입력
