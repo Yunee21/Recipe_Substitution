@@ -7,9 +7,26 @@ import time
 from difflib import get_close_matches
 from lib import utils as uts
 
+
 # -----------------------
-# ⚙️ 초기 설정
+# ⚙️ 초기 설정 + 데이터 로딩 (즉시)
 # -----------------------
+@st.cache_resource
+def load_recipe_dct_and_names():
+    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+    recipe_keys_eng = list(recipe_dct.keys())
+    recipe_names_ko = []
+    ko_to_eng = {}
+    for eng in recipe_keys_eng:
+        ko = uts.eng2ko(eng)
+        recipe_names_ko.append(ko)
+        ko_to_eng[ko] = eng
+    return recipe_dct, recipe_names_ko, ko_to_eng
+
+# ✅ 앱 진입 시 즉시 로딩 (전역 접근 가능)
+recipe_dct, recipe_names_ko, ko_to_eng = load_recipe_dct_and_names()
+
+
 def init_app():
     device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
     seed = 721
@@ -38,15 +55,11 @@ def init_app():
 def inject_custom_css():
     st.markdown("""
     <style>
-    .stApp {
-        background-color: #ffffff;
-    }
-
+    .stApp { background-color: #ffffff; }
     section[data-testid="stSidebar"] {
         background-color: #ffe6ed;
         padding: 2rem 1rem;
     }
-
     .stButton>button {
         background-color: transparent;
         border: none;
@@ -58,20 +71,13 @@ def inject_custom_css():
         border-radius: 8px;
         cursor: pointer;
     }
-    .stButton>button.selected {
-        background-color: #ba3d60 !important;
-        color: white !important;
-    }
-
     .stButton>button:hover {
         background-color: #f8d4dd;
     }
-
     .stButton>button:disabled {
         opacity: 0.4;
         pointer-events: none;
     }
-
     .box-section {
         background-color: #ffe6ed;
         padding: 1.5rem;
@@ -80,13 +86,10 @@ def inject_custom_css():
         transition: background-color 0.3s ease;
         color: #000000;
     }
-
     .box-section.active {
-        background-color: transparent !important;
-        /* 또는 흐린 색 */
-        color: black !important;
+        background-color: #ba3d60 !important;
+        color: white !important;
     }
-
     .box-section.active h1,
     .box-section.active h2,
     .box-section.active h3,
@@ -95,25 +98,8 @@ def inject_custom_css():
     .box-section.active span {
         color: white !important;
     }
-    .custom-submit-btn {
-        background-color: white !important;
-        color: #ba3d60 !important;
-        border: 2px solid #ba3d60 !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1.2rem !important;
-        font-size: 16px !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    .custom-submit-btn:hover {
-        background-color: #ba3d60 !important;
-        color: white !important;
-    }
     </style>
     """, unsafe_allow_html=True)
-
 
 # -----------------------
 # 📋 사이드바 메뉴
@@ -133,36 +119,8 @@ def sidebar_menu():
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
 
             btn_key = f"menu_{name}"
-            btn_clicked = st.button(f"{icon} {name}", key=btn_key, disabled=disabled)
-
-            # 버튼 누르면 상태 업데이트
-            if btn_clicked:
+            if st.button(f"{icon} {name}", key=btn_key, disabled=disabled):
                 st.session_state["selected_menu"] = name
-
-        # CSS 추가 (현재 선택된 버튼에만 적용)
-        st.markdown(
-            f"""
-            <style>
-            .div[data-testid="stButton"][id="{btn_key}"] button {{
-                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
-                color: {'black' if is_selected else '#ba3d60'} !important;
-                font-weight: 600;
-                font-size: 16px;
-                border: none;
-                border-radius: 8px;
-                padding: 10px 14px;
-                margin-bottom: 10px;
-                width: 100%;
-                text-align: left;
-                transition: background-color 0.3s ease;
-            }}
-            .div[data-testid="stButton"][id="{btn_key}"] button:hover {{
-                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
-            }}
-            </style>
-            """, 
-            unsafe_allow_html=True
-        )
 
 
 
@@ -293,12 +251,17 @@ def load_recipe_dct():
 
 @st.cache_resource
 def load_recipe_dct_and_names():
-    dct = uts.loadPickle("data/recipe_graph_dct.pkl")
-    mapping = [(uts.eng2ko(k), k) for k in dct.keys()]
-    ko_names = [ko for ko, _ in mapping]
-    ko_to_eng = dict(mapping)
-    return dct, ko_names, ko_to_eng
+    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+    recipe_keys_eng = list(recipe_dct.keys())
+    recipe_names_ko = []
+    ko_to_eng = {}
 
+    for eng in recipe_keys_eng:
+        ko = uts.eng2ko(eng)
+        recipe_names_ko.append(ko)
+        ko_to_eng[ko] = eng
+
+    return recipe_dct, recipe_names_ko, ko_to_eng
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
     with st.container():
