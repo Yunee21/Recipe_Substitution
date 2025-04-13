@@ -290,31 +290,26 @@ def recipe_input_page():
 
         try:
             recipe_dct = uts.loadPickle("data/recipe_dct.pkl")
-            recipe_names_ko = [uts.eng2ko(k) for k in recipe_dct.keys()]
+            recipe_names_eng = list(recipe_dct.keys())
+            recipe_names_ko = [uts.eng2ko(k) for k in recipe_names_eng]
         except:
-            recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개", "된장찌개"]
+            recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
 
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
-        # suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
-        # if suggestions:
-        #     selected_recipe = st.selectbox("추천 레시피", suggestions, key="recipe_suggest")
-        #     st.session_state["recipe_selected"] = selected_recipe
-        # else:
-        #     st.session_state["recipe_selected"] = ""
-        if user_input:
-            suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3)
-            if suggestions:
-                st.markdown("**🔍 자동완성 추천:**")
-                for name in suggestions:
-                    if st.button(name, key=f"suggest_{name}"):
-                        st.session_state["recipe_input"] = name
-                        st.experimental_rerun()  # 입력창에 반영 후 즉시 리렌더링
+        # 자동완성 유사 검색
+        suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
-        if st.button("레시피 제출"):
-            if st.session_state["recipe_selected"]:
-                st.success(f"'{st.session_state['recipe_selected']}' 레시피가 선택되었습니다.")
-                st.session_state["recipe_done"] = True
+        selected_recipe = None
+        if suggestions:
+            selected_recipe = st.selectbox("자동 완성된 추천 목록", suggestions, key="recipe_select")
+
+        # ✅ 제출 버튼 추가
+        if selected_recipe and st.button("레시피 제출"):
+            st.session_state["selected_recipe_name"] = selected_recipe
+            st.session_state["recipe_done"] = True
+            st.success(f"'{selected_recipe}' 레시피가 제출되었습니다!")
+
         st.markdown('</div>', unsafe_allow_html=True)
 
 
