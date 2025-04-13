@@ -18,9 +18,17 @@ def init_app():
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-    st.session_state.setdefault("selected_menu", "프로필 입력")
-    st.session_state.setdefault("submitted", False)
-    st.session_state.setdefault("first_submitted", False)
+    defaults = {
+        "selected_menu": "프로필 입력",
+        "submitted": False,
+        "first_submitted": False,
+        "profile_done": False,
+        "ingredient_done": False,
+        "recipe_done": False,
+        "ingredients": [],
+    }
+    for k, v in defaults.items():
+        st.session_state.setdefault(k, v)
 
 
 # -----------------------
@@ -89,8 +97,11 @@ def sidebar_menu():
 # 👤 프로필 입력
 # -----------------------
 def profile_page():
-    with st.expander("1) 프로필 입력", expanded=True):
-        st.markdown("### 👥 신체 정보")
+    box_class = "box-section active" if st.session_state["selected_menu"] == "프로필 입력" else "box-section"
+    with st.container():
+        st.markdown(f'<div class="{box_class}">', unsafe_allow_html=True)
+        st.markdown("### 👥 프로필 입력")
+
         col1, col2, col3 = st.columns(3)
         with col1:
             gender = st.radio("성별", ["남성", "여성"], horizontal=True)
@@ -101,102 +112,68 @@ def profile_page():
 
         st.markdown("### 🧬 신장질환 정보")
         input_method = st.radio("입력 방식", ("신장질환 단계 선택", "eGFR 수치 입력"))
-        kidney_stage, kidney_dialysis, egfr = None, None, None
+        kidney_stage, egfr = None, None
 
         if input_method == "신장질환 단계 선택":
             kidney_stage = st.selectbox("단계 선택", ["1단계", "2단계", "3단계", "4단계", "5단계", "혈액투석", "복막투석"])
         else:
             egfr = st.number_input("eGFR 수치", 0.0, 200.0, step=0.1)
-            if egfr >= 90: kidney_stage = "1단계"
-            elif 60 <= egfr < 90: kidney_stage = "2단계"
-            elif 30 <= egfr < 60: kidney_stage = "3단계"
-            elif 15 <= egfr < 30: kidney_stage = "4단계"
-            elif egfr < 15: kidney_stage = "5단계"
-            kidney_dialysis = st.selectbox("투석 여부", ["비투석", "복막투석", "혈액투석"])
+            kidney_stage = uts.inferStageFromEgfr(egfr)
 
         st.session_state.update({
             "gender": gender,
             "height": height,
             "weight": weight,
             "kidney_stage": kidney_stage,
-            "cond_vec": uts.getNutLabels(kidney_stage)
+            "cond_vec": uts.getNutLabels(kidney_stage),
         })
 
-# -----------------------
-# 📋 사이드바 메뉴
-# -----------------------
-def sidebar_menu():
-    menu_items = {
-        "프로필 입력": "👤",
-        "보유 식재료 입력": "🧺",
-        "레시피 입력": "🍳",
-        "대체 레시피 추천": "🍽️"
-    }
-
-    with st.sidebar:
-        st.markdown("### 메뉴 선택")
-        for name, icon in menu_items.items():
-            disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
-            if st.button(f"{icon} {name}", disabled=disabled, key=f"menu_{name}"):
-                st.session_state["selected_menu"] = name
-
+        if st.button("프로필 제출"):
+            if gender and height and weight and kidney_stage:
+                st.success("프로필 정보를 입력받았습니다.")
+                st.session_state["profile_done"] = True
+        st.markdown('</div>', unsafe_allow_html=True)
 # -----------------------
 # 🧺 보유 식재료 입력
 # -----------------------
 def ingredient_page():
-    with st.expander("2) 보유 식재료 입력", expanded=True):
-        ingredient_input = st.text_area("보유 식재료 (쉼표로 구분)", placeholder="예: 두부, 양파, 간장, 달걀, 시금치")
-        ingredient_list = [item.strip() for item in ingredient_input.split(",") if item.strip()]
-        if ingredient_list:
-            st.success("입력된 식재료 목록:")
-            st.write(ingredient_list)
+    box_class = "box-section active" if st.session_state["selected_menu"] == "보유 식재료 입력" else "box-section"
+    with st.container():
+        st.markdown(f'<div class="{box_class}">', unsafe_allow_html=True)
+        st.markdown("### 🧺 보유 식재료 입력")
+
+        ingre = st.text_input("보유 식재료를 입력하세요", placeholder="예: 두부")
+        if ingre:
+            st.session_state["ingredients"].append(ingre)
+            st.experimental_rerun()
+
+        if st.session_state["ingredients"]:
+            st.markdown("#### 입력된 식재료 목록")
+            st.table(pd.DataFrame(st.session_state["ingredients"], columns=["식재료"]))
+            st.session_state["ingredient_done"] = True
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------
 # 🍳 레시피 입력
 # -----------------------
 def recipe_input_page():
-    with st.expander("3) 레시피 입력", expanded=True):
-        recipe_file_path = "data/recipe_dct.pkl"
-        try:
-            recipe_dct = uts.loadPickle(recipe_file_path)
-        except FileNotFoundError:
-            st.error("레시피 파일을 찾을 수 없습니다.")
-            return
-
-        recipe_name_ko = st.text_input("레시피명", placeholder="예: 부대찌개")
-        if not recipe_name_ko:
-            return
-
-        if recipe_name_ko == '간장닭조림':
-            recipe_name_en = 'Soy Braised Chicken'
-            recipe_dct[recipe_name_en] = {
-                'ingredients': ['chicken thighs', 'vegetable oil', 'onion', 'garlic', 'sugar', 'water', 'soy sauce'],
-                'directions': ['saute', 'add', 'cook', 'reduce', 'serve'],
-                'mask_indices': [0],
-                'nutrition_labels': [],
-                'nutrition_label_encodings': [],
-                'co_occurs_with': uts.makeCoOccursWith(['chicken thighs', 'vegetable oil', 'onion', 'garlic', 'sugar', 'water', 'soy sauce']),
-                'contains': [[0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 3, 3], [0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6]],
-                'used_in': [[0, 1, 2, 3, 4, 2, 3, 4, 5, 6, 5, 6], [0, 0, 1, 1, 1, 2, 2, 2, 1, 1, 3, 3]],
-                'pairs_with': [[1, 2, 1, 3], [2, 1, 3, 1]],
-                'follows': [[0, 0, 1, 2, 2, 1, 3], [1, 2, 3, 1, 3, 4, 4]],
-            }
+    box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
+    with st.container():
+        st.markdown(f'<div class="{box_class}">', unsafe_allow_html=True)
+        st.markdown("### 🍳 레시피 입력")
 
         try:
-            recipe_name_en = uts.ko2eng(recipe_name_ko)
-            ingre_ko_lst = [uts.eng2ko(i) for i in recipe_dct[recipe_name_en]['ingredients']]
-            direc_ko_lst = [uts.eng2ko(i) for i in recipe_dct[recipe_name_en]['directions']]
+            recipe_dct = uts.loadPickle("data/recipe_dct.pkl")
+            recipe_names_ko = [uts.eng2ko(k) for k in recipe_dct.keys()]
+        except:
+            recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
 
-            st.success(f"🔍 '{recipe_name_en}' 레시피를 찾았습니다.")
-            st.markdown("#### 🧾 재료")
-            st.markdown(ingre_ko_lst)
-            st.markdown("#### 🍳 조리 방법")
-            st.markdown(direc_ko_lst)
+        selected_recipe = st.selectbox("레시피명 검색", options=recipe_names_ko)
+        if selected_recipe:
+            st.session_state["recipe_done"] = True
+            st.success(f"'{selected_recipe}' 레시피 선택됨")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-            st.session_state["recipe_name_ko"] = recipe_dct[recipe_name_en]
-
-        except Exception as e:
-            st.warning("레시피 정보를 찾을 수 없습니다.")
 
 # -----------------------
 # 🍽️ 대체 레시피 추천
@@ -225,24 +202,14 @@ def recommend_page():
         st.success("건강 맞춤 레시피입니다!")
 
 # -----------------------
-# ✅ 제출 버튼
+# ✅ 제출 여부 확인 및 자동 이동
 # -----------------------
-def submit_button():
-    st.markdown("---")
-    can_submit = (
-        st.session_state.get("gender")
-        and st.session_state.get("height")
-        and st.session_state.get("weight")
-        and st.session_state.get("kidney_stage")
-    )
-    if st.button("제출"):
-        if can_submit:
-            st.session_state["submitted"] = False
-            st.session_state["first_submitted"] = True
+def check_auto_submit():
+    if st.session_state["profile_done"] and st.session_state["ingredient_done"] and st.session_state["recipe_done"]:
+        if not st.session_state["submitted"]:
             st.session_state["selected_menu"] = "대체 레시피 추천"
-            st.success("제출 완료! '대체 레시피 추천'으로 이동합니다.")
-        else:
-            st.error("❌ 제출할 수 없습니다. 필수 항목을 모두 입력해주세요.")
+            st.session_state["submitted"] = True
+            st.experimental_rerun()
 
 # -----------------------
 # 🚀 Main App
@@ -251,6 +218,7 @@ def main():
     init_app()
     inject_custom_css()
     sidebar_menu()
+    
     st.markdown("<h1 style='color:#ba3d60;'>맞춤형 레시피 대체 시스템 🍽️</h1>", unsafe_allow_html=True)
 
     selected = st.session_state["selected_menu"]
@@ -260,10 +228,10 @@ def main():
         ingredient_page()
     elif selected == "레시피 입력":
         recipe_input_page()
-    elif selected == "대체 레시피 추천" and st.session_state["first_submitted"]:
+    elif selected == "대체 레시피 추천":
         recommend_page()
 
-    submit_button()
+    check_auto_submit()
 
 
 if __name__ == "__main__":
