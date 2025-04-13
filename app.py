@@ -287,6 +287,10 @@ def ingredient_page():
 # -----------------------
 # 🍳 레시피 입력
 # -----------------------
+@st.cache_resource
+def load_recipe_dct():
+    return uts.loadPickle("data/recipe_graph_dct.pkl")
+
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
     with st.container():
@@ -294,7 +298,8 @@ def recipe_input_page():
         st.markdown("### 🍳 레시피 입력")
 
         try:
-            recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+            recipe_dct = load_recipe_dct()
+
             recipe_keys_eng = list(recipe_dct.keys())
             recipe_names_ko = [uts.eng2ko(k) for k in recipe_keys_eng]
             ko_to_eng = {uts.eng2ko(k): k for k in recipe_keys_eng}
