@@ -135,26 +135,29 @@ def sidebar_menu():
                 st.session_state["selected_menu"] = name
 
         # CSS 추가 (현재 선택된 버튼에만 적용)
-        st.markdown(f"""
-        <style>
-        div[data-testid="stButton"][id="{btn_key}"] button {{
-            background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
-            color: {'black' if is_selected else '#ba3d60'} !important;
-            font-weight: 600;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 10px;
-            width: 100%;
-            text-align: left;
-            transition: background-color 0.3s ease;
-        }}
-        div[data-testid="stButton"][id="{btn_key}"] button:hover {{
-            background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <style>
+            .div[data-testid="stButton"][id="{btn_key}"] button {{
+                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
+                color: {'black' if is_selected else '#ba3d60'} !important;
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 14px;
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: left;
+                transition: background-color 0.3s ease;
+            }}
+            .div[data-testid="stButton"][id="{btn_key}"] button:hover {{
+                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
+            }}
+            </style>
+            """, 
+            unsafe_allow_html=True
+        )
 
 
 
