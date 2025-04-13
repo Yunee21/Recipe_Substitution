@@ -289,7 +289,7 @@ def recipe_input_page():
         st.markdown("### 🍳 레시피 입력")
 
         try:
-            recipe_dct = uts.loadPickle("data/recipe_dct.pkl")
+            recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
             recipe_names_eng = list(recipe_dct.keys())
             recipe_names_ko = [uts.eng2ko(k) for k in recipe_names_eng]
         except:
@@ -318,26 +318,7 @@ def recipe_input_page():
 # -----------------------
 def recommend_page():
     st.markdown("### 🧾 대체 레시피 추천")
-    recipe_df = pd.read_excel("recipe.xlsx")
 
-    if not st.session_state["submitted"]:
-        time.sleep(7)
-        recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
-        st.dataframe(recipe_df['재료'], use_container_width=True)
-        st.markdown("#### 🍳 조리 방법")
-        st.markdown("""1. 두부는 물기를 제거하고 깍둑썰기\n2. 느타리버섯 손질\n3. 팬에 들기름 → 마늘 볶기\n4. 두부, 버섯 중불에 볶기\n5. 간장, 고춧가루, 물 넣고 졸이기\n6. 불 끄고 쪽파 마무리""")
-        st.session_state["submitted"] = True
-        st.success("질환에 맞춘 건강한 레시피입니다!")
-    else:
-        time.sleep(7)
-        st.markdown("### 📝 섭취 가이드")
-        st.write("- 제한: 나트륨, 칼륨\n- 적절: 단백질")
-        recipe_df.at[0, '재료'] = '*** 애호박 ***'
-        recipe_df.at[1, '재료'] = '*** 느타리버섯 ***'
-        st.dataframe(recipe_df['재료'], use_container_width=True)
-        st.markdown("#### 🍳 조리 방법")
-        st.markdown("""1. 애호박 손질\n2. 느타리버섯 손질\n3. 팬에 들기름 → 마늘 볶기\n4. 애호박, 버섯 볶기\n5. 양념 넣고 졸이기\n6. 쪽파로 마무리""")
-        st.success("건강 맞춤 레시피입니다!")
 
 # -----------------------
 # ✅ 제출 여부 확인 및 자동 이동
