@@ -11,22 +11,6 @@ from lib import utils as uts
 # -----------------------
 # ⚙️ 초기 설정 + 데이터 로딩 (즉시)
 # -----------------------
-@st.cache_resource
-def load_recipe_dct_and_names():
-    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
-    recipe_keys_eng = list(recipe_dct.keys())
-    recipe_names_ko = []
-    ko_to_eng = {}
-    for eng in recipe_keys_eng:
-        ko = uts.eng2ko(eng)
-        recipe_names_ko.append(ko)
-        ko_to_eng[ko] = eng
-    return recipe_dct, recipe_names_ko, ko_to_eng
-
-# ✅ 앱 진입 시 즉시 로딩 (전역 접근 가능)
-recipe_dct, recipe_names_ko, ko_to_eng = load_recipe_dct_and_names()
-
-
 def init_app():
     device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
     seed = 721
@@ -249,19 +233,6 @@ def ingredient_page():
 def load_recipe_dct():
     return uts.loadPickle("data/recipe_graph_dct.pkl")
 
-@st.cache_resource
-def load_recipe_dct_and_names():
-    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
-    recipe_keys_eng = list(recipe_dct.keys())
-    recipe_names_ko = []
-    ko_to_eng = {}
-
-    for eng in recipe_keys_eng:
-        ko = uts.eng2ko(eng)
-        recipe_names_ko.append(ko)
-        ko_to_eng[ko] = eng
-
-    return recipe_dct, recipe_names_ko, ko_to_eng
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
     with st.container():
@@ -269,7 +240,7 @@ def recipe_input_page():
         st.markdown("### 🍳 레시피 입력")
 
         try:
-            recipe_dct, recipe_names_ko, ko_to_eng = load_recipe_dct_and_names()
+            recipe_dct = load_recipe_dct()
 
         except:
             recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
