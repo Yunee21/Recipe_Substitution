@@ -139,7 +139,7 @@ def sidebar_menu():
         <style>
         div[data-testid="stButton"][id="{btn_key}"] button {{
             background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
-            color: {'white' if is_selected else '#ba3d60'} !important;
+            color: {'black' if is_selected else '#ba3d60'} !important;
             font-weight: 600;
             font-size: 16px;
             border: none;
