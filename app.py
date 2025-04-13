@@ -52,6 +52,18 @@ def inject_custom_css():
         opacity: 0.4;
         pointer-events: none;
     }
+    
+    .box-section {
+        background-color: #ffe6ed;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .box-section.active {
+        background-color: #ba3d60 !important;
+        color: white !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -109,6 +121,24 @@ def profile_page():
             "kidney_stage": kidney_stage,
             "cond_vec": uts.getNutLabels(kidney_stage)
         })
+
+# -----------------------
+# 📋 사이드바 메뉴
+# -----------------------
+def sidebar_menu():
+    menu_items = {
+        "프로필 입력": "👤",
+        "보유 식재료 입력": "🧺",
+        "레시피 입력": "🍳",
+        "대체 레시피 추천": "🍽️"
+    }
+
+    with st.sidebar:
+        st.markdown("### 메뉴 선택")
+        for name, icon in menu_items.items():
+            disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
+            if st.button(f"{icon} {name}", disabled=disabled, key=f"menu_{name}"):
+                st.session_state["selected_menu"] = name
 
 # -----------------------
 # 🧺 보유 식재료 입력
