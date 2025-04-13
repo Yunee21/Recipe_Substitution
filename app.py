@@ -187,11 +187,9 @@ def profile_page():
 # -----------------------
 # 🧺 보유 식재료 입력
 # -----------------------
-def add_ingredient():
-    ingre = st.session_state["new_ingre"]
-    if ingre:
-        st.session_state["ingredients"].append(ingre)
-        st.session_state["new_ingre"] = ""  # 입력창 초기화
+def remove_ingredient(ingredient):
+    if ingredient in st.session_state["ingredients"]:
+        st.session_state["ingredients"].remove(ingredient)
 
 def ingredient_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "보유 식재료 입력" else "box-section"
@@ -207,11 +205,22 @@ def ingredient_page():
         )
 
         if st.session_state["ingredients"]:
-            st.markdown("#### 입력된 식재료 목록")
-            st.dataframe(pd.DataFrame(st.session_state["ingredients"], columns=["식재료"]), use_container_width=True)
-            st.session_state["ingredient_done"] = True
+            st.markdown("#### 입력된 식재료 목록 (클릭하면 삭제됩니다)")
 
+            cols = st.columns(3)
+            for i, ingre in enumerate(st.session_state["ingredients"]):
+                with cols[i % 3]:
+                    st.button(
+                        ingre,
+                        key=f"ingre_{i}",
+                        on_click=remove_ingredient,
+                        args=(ingre,),
+                        help="클릭 시 목록에서 제거됩니다",
+                    )
+
+            st.session_state["ingredient_done"] = True
         st.markdown('</div>', unsafe_allow_html=True)
+
 
 # -----------------------
 # 🍳 레시피 입력
