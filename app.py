@@ -181,6 +181,24 @@ def profile_page():
 # -----------------------
 # 🧺 보유 식재료 입력
 # -----------------------
+@st.cache_resource
+def load_ingre_node_dct():
+    ingre_node_dct = uts.loadPickle("data/ingre_node_dct.pkl")
+    ingre_node_ko = uts.loadPickle("data/ingre_node_ko.pkl")
+    return ingre_node_dct, ingre_node_ko
+    
+ingre_node_dct, ingre_node_ko = load_ingre_node_dct()
+
+def match_ingredients_to_standard(user_ingredients, ingre_node_ko):
+    result = {}
+    for user_input in user_ingredients:
+        match = get_close_matches(user_input, ingre_node_ko, n=1, cutoff=0.3)
+        if match:
+            result[user_input] = match[0]
+        else:
+            result[user_input] = None  # 또는 "알 수 없음"
+    return result
+
 def add_ingredient():
     ingre = st.session_state["new_ingre"]
     if ingre:
@@ -218,10 +236,17 @@ def ingredient_page():
                         help="클릭 시 목록에서 제거됩니다"
                     )
 
-            # ✅ 제출 버튼 추가
-            if st.button("식재료 제출"):
+            # ✅ 제출 시 매핑 실행
+            if st.button("식재료 제출", key="ingredient_submit"):
+                user_ingredients = st.session_state["ingredients"]
+                matched_dict = match_ingredients_to_standard(user_ingredients, ingre_node_ko)
+                st.session_state["ingredient_mapping"] = matched_dict
                 st.session_state["ingredient_done"] = True
                 st.success("식재료가 제출되었습니다!")
+
+                # ✅ 매핑 결과 표시 (선택적)
+                st.markdown("#### 🔍 자동 매핑 결과")
+                st.json(matched_dict)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -231,9 +256,12 @@ def ingredient_page():
 # -----------------------
 @st.cache_resource
 def load_recipe_dct():
-    return uts.loadPickle("data/recipe_graph_dct.pkl")
+    recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
+    recipe_name_en = uts.loadPickle("data/recipe_name_en.pkl")
+    recipe_name_ko = uts.loadPickle('data/recipe_name_ko.pkl')
+    return recipe_dct, recipe_name_en, recipe_name_ko
     
-recipe_dct = load_recipe_dct()
+recipe_dct, recipe_name_en, recipe_name_ko = load_recipe_dct()
 
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
@@ -257,6 +285,10 @@ def recipe_input_page():
             if st.session_state["recipe_selected"]:
                 st.success(f"'{st.session_state['recipe_selected']}' 레시피가 선택되었습니다.")
                 st.session_state["recipe_done"] = True
+                st.session_state["selected_recipe_name_ko"] = suggestion
+                idx = recipe_name_ko.index(suggestion)
+                st.session_state["selected_recipe_name_eng"] = recipe_name_en[idx]
+                
         st.markdown('</div>', unsafe_allow_html=True)
         # if suggestions:
         #     st.markdown("##### 추천 레시피:")
