@@ -295,13 +295,21 @@ def recipe_input_page():
             recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개", "된장찌개"]
 
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
-        suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
+        # suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
-        if suggestions:
-            selected_recipe = st.selectbox("추천 레시피", suggestions, key="recipe_suggest")
-            st.session_state["recipe_selected"] = selected_recipe
-        else:
-            st.session_state["recipe_selected"] = ""
+        # if suggestions:
+        #     selected_recipe = st.selectbox("추천 레시피", suggestions, key="recipe_suggest")
+        #     st.session_state["recipe_selected"] = selected_recipe
+        # else:
+        #     st.session_state["recipe_selected"] = ""
+        if user_input:
+            suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3)
+            if suggestions:
+                st.markdown("**🔍 자동완성 추천:**")
+                for name in suggestions:
+                    if st.button(name, key=f"suggest_{name}"):
+                        st.session_state["recipe_input"] = name
+                        st.experimental_rerun()  # 입력창에 반영 후 즉시 리렌더링
 
         if st.button("레시피 제출"):
             if st.session_state["recipe_selected"]:
