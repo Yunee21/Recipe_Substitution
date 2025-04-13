@@ -292,25 +292,26 @@ def recipe_input_page():
             recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
             recipe_keys_eng = list(recipe_dct.keys())
             recipe_names_ko = [uts.eng2ko(k) for k in recipe_keys_eng]
-            ko_to_eng = {uts.eng2ko(k): k for k in recipe_keys_eng}  # 역매핑
+            ko_to_eng = {uts.eng2ko(k): k for k in recipe_keys_eng}
         except:
             recipe_names_ko = ["부대찌개", "간장닭조림", "김치찌개"]
             ko_to_eng = {k: k for k in recipe_names_ko}
 
+        # ✅ 1. 입력창
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
 
-        # 자동완성 리스트 생성
+        # ✅ 2. 실시간 추천 리스트 보여주기 (구글처럼)
         suggestions = get_close_matches(user_input, recipe_names_ko, n=5, cutoff=0.3) if user_input else []
 
-        selected_recipe = None
         if suggestions:
-            selected_recipe = st.selectbox("자동 완성된 추천 목록", suggestions, key="recipe_select")
-
-        if selected_recipe and st.button("레시피 제출", key="recipe_submit"):
-            st.session_state["selected_recipe_name_ko"] = selected_recipe
-            st.session_state["selected_recipe_name_eng"] = ko_to_eng[selected_recipe]
-            st.session_state["recipe_done"] = True
-            st.success(f"'{selected_recipe}' 레시피가 제출되었습니다!")
+            st.markdown("##### 추천 레시피:")
+            for i, suggestion in enumerate(suggestions):
+                if st.button(suggestion, key=f"suggestion_{i}"):
+                    st.session_state["selected_recipe_name_ko"] = suggestion
+                    st.session_state["selected_recipe_name_eng"] = ko_to_eng[suggestion]
+                    st.session_state["recipe_done"] = True
+                    st.success(f"'{suggestion}' 레시피가 제출되었습니다!")
+                    st.experimental_rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
 
