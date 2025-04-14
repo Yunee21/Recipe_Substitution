@@ -531,27 +531,7 @@ def recommend_page():
                     if st.button(button_label, key=key):
                         st.session_state["selected_alternative"] = alt
 
-            # with cols[i]:
-            #     is_selected = selected_alt == alt
-    
-            #     button_label = f"✅ {alt}" if is_selected else alt
-            #     button_style = f"""
-            #     <style>
-            #     div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
-            #         background-color: {'#ba3d60' if is_selected else 'white'} !important;
-            #         color: {'white' if is_selected else '#ba3d60'} !important;
-            #         border: 2px solid #ba3d60 !important;
-            #         border-radius: 8px !important;
-            #         font-weight: 600 !important;
-            #     }}
-            #     </style>
-            #     """
-            #     st.markdown(button_style, unsafe_allow_html=True)
-    
-            #     if st.button(button_label, key=f"alt_ingre_{i}"):
-            #         st.session_state["selected_alternative"] = alt
-            #         selected_alt = alt  # 바로 반영
-            #         # rerun 하지 않고 아래에서 바로 보여줌
+
     
         # ✅ 버튼 아래에 대체 결과 즉시 출력
         if selected_alt:
