@@ -8,3 +8,4 @@ deep_translator
 huggingface_hub
 transformers
 inflect 
+scikit-learn
