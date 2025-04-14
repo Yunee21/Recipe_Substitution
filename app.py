@@ -103,6 +103,42 @@ def sidebar_menu():
         for name, icon in menu_items.items():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
+
+            bg_color = "#ba3d60" if is_selected else "#ffe6ed"
+            font_color = "white" if is_selected else "#ba3d60"
+            cursor = "not-allowed" if disabled else "pointer"
+            opacity = "0.5" if disabled else "1.0"
+
+            # form 없이 JS없이 처리하는 방식
+            button_html = f"""
+            <div style="margin-bottom: 0.5rem;">
+                <a href="/?selected_menu={name}" style="
+                    display: block;
+                    background-color: {bg_color};
+                    color: {font_color};
+                    padding: 10px 14px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    text-decoration: none;
+                    pointer-events: {'none' if disabled else 'auto'};
+                    opacity: {opacity};
+                ">
+                    {icon} {name}
+                </a>
+            </div>
+            """
+            st.markdown(button_html, unsafe_allow_html=True)
+
+        # URL 쿼리로부터 메뉴 선택
+        query_params = st.experimental_get_query_params()
+        if "selected_menu" in query_params:
+            selected = query_params["selected_menu"][0]
+            st.session_state["selected_menu"] = selected
+        """ 
+        for name, icon in menu_items.items():
+            is_selected = st.session_state["selected_menu"] == name
+            disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
             
             btn_key = f"menu_{name}"
             clicked = st.button(f"{icon} {name}", key=btn_key, disabled=disabled)
@@ -132,7 +168,7 @@ def sidebar_menu():
             </style>
             """
             st.markdown(style, unsafe_allow_html=True)
-
+        """
 
 
 # -----------------------
