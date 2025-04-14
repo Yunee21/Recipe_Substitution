@@ -140,9 +140,10 @@ def sidebar_menu():
             cursor = "not-allowed" if disabled else "pointer"
             opacity = "0.5" if disabled else "1.0"
 
-            btn_html = f"""
+            # 버튼 HTML 직접 생성
+            button_html = f"""
             <form action="" method="post">
-                <button name="menu" value="{name}" type="submit"
+                <button name="selected_menu" value="{name}" type="submit"
                     style="
                         background-color: {bg_color};
                         color: {font_color};
@@ -156,6 +157,7 @@ def sidebar_menu():
                         text-align: left;
                         cursor: {cursor};
                         opacity: {opacity};
+                        transition: 0.3s all ease;
                     "
                     {'disabled' if disabled else ''}
                 >
@@ -163,13 +165,11 @@ def sidebar_menu():
                 </button>
             </form>
             """
+            st.markdown(button_html, unsafe_allow_html=True)
 
-            st.markdown(btn_html, unsafe_allow_html=True)
-
-        # 메뉴가 클릭되었는지 query_param으로 감지
-        query_params = st.experimental_get_query_params()
-        if "menu" in query_params:
-            selected = query_params["menu"][0]
+        # 선택한 메뉴를 반영
+        if "selected_menu" in st.experimental_get_query_params():
+            selected = st.experimental_get_query_params()["selected_menu"][0]
             st.session_state["selected_menu"] = selected
 
 
