@@ -330,36 +330,59 @@ def getIngredientKO(ingre_en):
     return ingre_ko
 
 def recommend_page():
-    st.markdown("### 🧾 대체 레시피 추천")
-
-    # -----------------------
-    # 1. 선택된 레시피 불러오기
-    # -----------------------
+    
+    # *** 1. 선택된 레시피 불러오기 ***
     name_eng = st.session_state["selected_recipe_name_eng"]
     name_ko = st.session_state["selected_recipe_name_ko"]
     recipe_info = recipe_dct[name_eng]
 
+    st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
+
+    # *** 2. 재료 불러오기
     orig_recipe_ko = pd.DataFrame([], columns=['recipe','ingredients'])
     len_ingre = len(recipe_info['ingredient'])
     orig_recipe_ko['recipe'] = [name_ko] + [''] * (len_ingre - 1)
     orig_recipe_ko['ingredients'] = getIngredientKO(recipe_info['ingredient'])
     directions = ['\n'.join(x) for x in recipe_info['direction']]
-
-    st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
+    
     st.markdown("#### 🧾 재료")
+    
+    # *** 3. 대체 재료 찾기 ***
+    target = ''
+    exchange_table_dct = uts.loadPickle('data/exchange_table_dct.pkl')
+    for ingre_ko in list(orig_recipe_ko['ingredients']):
+        exchange_ingre_ko_lst = list(exchange_table_dct.keys())
+        if ingre_ko in exchange_ingre_ko_lst:
+            target = ingre_ko
+            break
+    
+    if (target == ''):
+        for ingre_ko in list(orig_recipe_ko['ingredients']):
+            exchange_ingre_ko_lst = list(exchange_table_dct.keys())
+            matches = get_close_matches(ingre_ko, exchange_ingre_ko_lst, n=1, cutoff=0.8)
+            if matches:
+                target = ingre_ko
+
+    if (target == ''):
+        st.markdown("#### 🔁 대체할 재료를 찾지 못했습니다.")
+        st.session_state['terminal'] = True
+    else:
+        st.session_state['terminal'] = False
+        target_idx = orig_recipe_ko['ingredients'].to_list().index(target)
+        orig_recipe_ko.at[target_idx, 'ingredients'] = f'*** {target} ***'
+    
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
-    
+
+    # *** 4. 조리 방법 불러오기
     st.markdown("#### 🍳 조리 방법")
-    st.markdown(directions)
+    st.markdown(directions[0])
+    st.markdown(str(recipe_info['direction']))
+
+
+
+
+
     
-    
-    ingredients = ['감자', '라면']
-    target = recipe_info.get("대체대상", ingredients[0])  # 예시용
-
-    
-
-
-
     # -----------------------
     # 2. 대체 후보 재료 표시
     # -----------------------
