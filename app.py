@@ -296,7 +296,7 @@ def load_recipe_dct():
     recipe_name_en = uts.loadPickle("data/recipe_name_en.pkl")
     recipe_name_ko = uts.loadPickle('data/recipe_name_ko.pkl')
     recipe_law = uts.loadPickle('data/recipe_dct.pkl')
-    gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
+    gnn_emb_dct = uts.loadPickle('results/zc_ingre_emb_dct.pkl')
     return recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct
     
 recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct = load_recipe_dct()
@@ -503,29 +503,34 @@ def recommend_page():
         cols = st.columns(len(alt_candidates))
         
         for i, alt in enumerate(alt_candidates):
-            col = cols[i % 5]  # 5칸 넘어가면 아래줄로 내려가게 (하지만 5개까지만 표시할 경우엔 무관)
-        
-            with col:
-                is_selected = selected_alt == alt
-        
-                button_label = f"✅ {alt}" if is_selected else alt
-                button_style = f"""
-                <style>
-                div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
-                    background-color: {'#ba3d60' if is_selected else 'white'} !important;
-                    color: {'white' if is_selected else '#ba3d60'} !important;
-                    border: 2px solid #ba3d60 !important;
-                    border-radius: 8px !important;
-                    font-weight: 600 !important;
-                    width: 100%;
-                }}
-                </style>
-                """
-                st.markdown(button_style, unsafe_allow_html=True)
-        
-                if st.button(button_label, key=f"alt_ingre_{i}"):
-                    st.session_state["selected_alternative"] = alt
-                    selected_alt = alt  # 바로 반영
+            cols = st.columns(5)
+
+            for i, alt in enumerate(alt_candidates[:5]):
+                col = cols[i % 5]
+                with col:
+                    is_selected = selected_alt == alt
+                    button_label = f"✅ {alt}" if is_selected else alt
+            
+                    button_style = f"""
+                    <style>
+                    div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
+                        background-color: {'#ba3d60' if is_selected else 'white'} !important;
+                        color: {'white' if is_selected else '#ba3d60'} !important;
+                        border: 2px solid #ba3d60 !important;
+                        border-radius: 8px !important;
+                        font-weight: 600 !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        width: 100%;
+                    }}
+                    </style>
+                    """
+                    st.markdown(button_style, unsafe_allow_html=True)
+            
+                    if st.button(button_label, key=f"alt_ingre_{i}"):
+                        st.session_state["selected_alternative"] = alt
+                        selected_alt = alt
             # with cols[i]:
             #     is_selected = selected_alt == alt
     
