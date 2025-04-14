@@ -285,9 +285,9 @@ def recipe_input_page():
             st.session_state["recipe_selected"] = selected_recipe
         else:
             st.session_state["recipe_selected"] = ""
-
-        if st.button("레시피 제출"):
-            if st.session_state["recipe_selected"]:
+        
+        if st.session_state["recipe_selected"]:
+            if st.button("레시피 제출"):
                 st.success(f"'{st.session_state['recipe_selected']}' 레시피가 선택되었습니다.")
                 st.session_state["recipe_done"] = True
                 st.session_state["selected_recipe_name_ko"] = suggestion
