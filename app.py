@@ -388,7 +388,7 @@ def recommend_page():
                 with cols[i]:
                     if st.button(alt, key=f"alt_ingre_{i}"):
                         st.session_state["selected_alternative"] = alt
-                        st.experimental_rerun()
+                        st.rerun()
         else:
             st.markdown("---")
             st.markdown(f"### ✅ 대체된 레시피")
