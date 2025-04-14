@@ -343,13 +343,14 @@ def recommend_page():
     
     # *** 3. 대체 재료 찾기 ***
     st.session_state['target'] = []
+    st.session_state['targets'] = []
     st.session_state['target_idx'] = 0
     exchange_table_dct = uts.loadPickle('data/exchange_table_dct.pkl')
     for ingre_ko in list(orig_recipe_ko['ingredients']):
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
         if ingre_ko in exchange_ingre_ko_lst:
-            st.session_state['target'] = ingre_ko
-            break
+            st.session_state['targets'].append(ingre_ko)
+    st.session_state['target'] = st.session_state['targets'][0]
     
     if st.session_state['target']:
         for ingre_ko in list(orig_recipe_ko['ingredients']):
@@ -378,17 +379,34 @@ def recommend_page():
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal'] :
         st.markdown("#### 🔁 대체할 재료를 선택하세요:")
-    
+
         alt_candidates = ['감자', '라자냐']
-    
         selected_alt = st.session_state.get("selected_alternative")
-        if not selected_alt:
-            cols = st.columns(5)
-            for i, alt in enumerate(alt_candidates):
-                with cols[i]:
-                    if st.button(alt, key=f"alt_ingre_{i}"):
-                        st.session_state["selected_alternative"] = alt
-                        st.rerun()
+        
+        cols = st.columns(len(alt_candidates))
+        
+        for i, alt in enumerate(alt_candidates):
+            with cols[i]:
+                is_selected = selected_alt == alt
+        
+                button_label = f"✅ {alt}" if is_selected else alt
+                button_style = f"""
+                <style>
+                div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
+                    background-color: {'#ba3d60' if is_selected else 'white'} !important;
+                    color: {'white' if is_selected else '#ba3d60'} !important;
+                    border: 2px solid #ba3d60 !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                }}
+                </style>
+                """
+                st.markdown(button_style, unsafe_allow_html=True)
+
+                if st.button(button_label, key=f"alt_ingre_{i}"):
+                    st.session_state["selected_alternative"] = alt
+                    st.rerun()
+
         else:
             st.markdown("---")
             st.markdown(f"### ✅ 대체된 레시피")
