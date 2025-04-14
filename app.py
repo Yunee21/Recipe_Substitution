@@ -386,7 +386,7 @@ def check_auto_submit():
         if not st.session_state["submitted"]:
             st.session_state["selected_menu"] = "대체 레시피 추천"
             st.session_state["submitted"] = True
-            st.experimental_rerun()
+            st.rerun()
             
 # -----------------------
 # 🚀 Main App
