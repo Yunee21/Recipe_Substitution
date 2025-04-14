@@ -372,24 +372,34 @@ def getIngredientKO(ingre_en):
         ingre_ko.append(ko)
     return ingre_ko
     
-def get_top_k(emb_dct, target_name, k=5):
-    names = list(emb_dct.keys())
-    vectors = np.array([emb_dct[n] for n in names])
+def get_top_k(emb_dct, target_name, k=5, L2=False):
+    
+    if (L2):
+        names = list(emb_dct.keys())
+        vectors = np.array([emb_dct[n] for n in names])
+    
+        target_vector = emb_dct[target_name].reshape(1, -1)
+        # Use Euclidean (L2) distance
+        dists = pairwise_distances(target_vector, vectors, metric='euclidean').flatten()
+    
+        topk_indices = dists.argsort()[1:k+1]  # exclude self (distance=0)
+        topk_names = [names[i] for i in topk_indices]
 
-    target_vector = emb_dct[target_name].reshape(1,-1)
-    sims = cosine_similarity(target_vector, vectors).flatten()
-
-    topk_indices = sims.argsort()[-(k+1):][::-1]  # exclude self
-    topk_names = [names[i] for i in topk_indices if names[i] != target_name][:k]
+    else:
+        names = list(emb_dct.keys())
+        vectors = np.array([emb_dct[n] for n in names])
+    
+        target_vector = emb_dct[target_name].reshape(1,-1)
+        sims = cosine_similarity(target_vector, vectors).flatten()
+    
+        topk_indices = sims.argsort()[-(k+1):][::-1]  # exclude self
+        topk_names = [names[i] for i in topk_indices if names[i] != target_name][:k]
 
     return topk_names
     
-def findSub(gnn_emb: dict, ingre_lst: list, k=5):
-    sub_lst = []
-    for idx, ing in enumerate(ingre_lst):
-        gnn_topk = get_top_k(gnn_emb, ing, k)
-        sub_lst.append(gnn_topk)
-    return sub_lst
+def findSub(gnn_emb: dict, ingre, k=5):
+    gnn_topk = get_top_k(gnn_emb, ingre, k)
+    return gnn_topk
 
 @st.cache_resource
 def loadGNNEmb():
