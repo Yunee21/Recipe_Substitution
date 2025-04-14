@@ -5,6 +5,8 @@ import torch
 import random
 import time
 from difflib import get_close_matches
+from huggingface_hub import login
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from lib import utils as uts
 
 
@@ -341,6 +343,7 @@ def recommend_page():
     
     # *** 3. 대체 재료 찾기 ***
     target = ''
+    target_idx = 0
     exchange_table_dct = uts.loadPickle('data/exchange_table_dct.pkl')
     for ingre_ko in list(orig_recipe_ko['ingredients']):
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
@@ -371,35 +374,30 @@ def recommend_page():
     st.markdown(str(recipe_info['direction']))
 
 
-
-
-
+    # *** 5. 대체 후보 재료 표시 ***
+    if st.session_state['terminal'] :
+        st.markdown("#### 🔁 대체할 재료를 선택하세요:")
     
-    # -----------------------
-    # 2. 대체 후보 재료 표시
-    # -----------------------
-    # st.markdown("#### 🔁 대체할 재료를 선택하세요:")
-    # selected_alt = st.session_state.get("selected_alternative")
+        alt_candidates = ['감자', '라자냐']
+    
+        selected_alt = st.session_state.get("selected_alternative")
+        if not selected_alt:
+            cols = st.columns(5)
+            for i, alt in enumerate(alt_candidates):
+                with cols[i]:
+                    if st.button(alt, key=f"alt_ingre_{i}"):
+                        st.session_state["selected_alternative"] = alt
+                        st.experimental_rerun()
+        else:
+            st.markdown("---")
+            st.markdown(f"### ✅ 대체된 레시피")
+            st.markdown("#### 🧾 재료")
+            sub = st.session_state["selected_alternative"]
+            orig_recipe_ko.at[target_idx, 'ingredients'] = f'*** {sub} ***'
+            st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
-    # if not selected_alt:
-    #     cols = st.columns(5)
-    #     for i, alt in enumerate(alt_candidates):
-    #         with cols[i]:
-    #             if st.button(alt, key=f"alt_ingre_{i}"):
-    #                 st.session_state["selected_alternative"] = alt
-    #                 st.experimental_rerun()
-    # else:
-    #     # -----------------------
-    #     # 3. 대체 결과 출력
-    #     # -----------------------
-
-    #     st.markdown("---")
-    #     st.markdown(f"### ✅ 대체된 레시피")
-    #     st.markdown("#### 🍽️ 재료 목록")
-    #     st.markdown(", ".join(new_ingredients))
-
-    #     st.markdown("#### 🍳 조리 방법")
-    #     st.markdown('ㅁ')
+            st.markdown("#### 🍳 조리 방법")
+            st.markdown('ㅁ')
 
 
 # -----------------------
