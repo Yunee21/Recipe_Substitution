@@ -419,6 +419,7 @@ def recommend_page():
     st.session_state['target'] = []
     st.session_state['targets'] = []
     st.session_state['target_idx'] = 0
+    st.session_state['target_en'] = []
     exchange_table_dct = uts.loadPickle('data/exchange_table_dct.pkl')
     for ingre_ko in list(orig_recipe_ko['ingredients']):
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
