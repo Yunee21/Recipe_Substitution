@@ -446,9 +446,22 @@ def recommend_page():
     - Do NOT include any explanations outside the steps.
     - Only return the formatted step-by-step string.
     """
-    # 프롬프트를 토크나이즈
-    response = uts.generateText(prompt, tokenizer, model)
-    st.markdown(response)
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    
+    # 모델 추론
+    with torch.no_grad():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=512,       # 생성할 최대 토큰 수
+            temperature=0.7,          # 창의성 정도 (0.7~1.0 추천)
+            top_p=0.95,
+            do_sample=True,
+            eos_token_id=tokenizer.eos_token_id
+        )
+    
+    # 출력 디코딩
+    generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+    
     # 프롬프트 제거 (프롬프트 포함된 경우 제거할 수도 있음)
     response = generated_text[len(prompt):].strip()
     
