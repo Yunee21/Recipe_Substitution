@@ -6,3 +6,4 @@ pandas>=1.0
 torch-geometric
 deep_translator
 huggingface_hub
+transformers
