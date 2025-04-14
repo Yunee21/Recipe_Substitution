@@ -494,7 +494,7 @@ def recommend_page():
         target_en = recipe_dct[name_eng]['ingredient'][target_idx]
         others = [ingre for ingre in recipe_dct[name_eng]['ingredient'] if ingre != target_en]
         
-        alt_candidates_en = findSub(gnn_emb_dct, target_en, others, k=10, L2=True)
+        alt_candidates_en = findSub(gnn_emb_dct, target_en, others, k=10, L2=False)
         alt_candidates = [uts.eng2ko(alt_en) for alt_en in alt_candidates_en]
         
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
@@ -505,32 +505,32 @@ def recommend_page():
         for i, alt in enumerate(alt_candidates):
             cols = st.columns(5)
 
-            for i, alt in enumerate(alt_candidates[:5]):
-                col = cols[i % 5]
+            for i, alt in enumerate(alt_candidates):
+                col = cols[i % 5]  # 열은 고정 반복 (0~4)
+                key = f"alt_ingre_{i}_{alt}"  # ✅ key를 더 고유하게!
+            
                 with col:
-                    is_selected = selected_alt == alt
+                    is_selected = st.session_state.get("selected_alternative") == alt
                     button_label = f"✅ {alt}" if is_selected else alt
             
-                    button_style = f"""
+                    # 스타일
+                    st.markdown(f"""
                     <style>
-                    div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
+                    div[data-testid="stButton"][id="{key}"] button {{
                         background-color: {'#ba3d60' if is_selected else 'white'} !important;
                         color: {'white' if is_selected else '#ba3d60'} !important;
                         border: 2px solid #ba3d60 !important;
                         border-radius: 8px !important;
                         font-weight: 600 !important;
                         white-space: nowrap !important;
-                        overflow: hidden !important;
-                        text-overflow: ellipsis !important;
                         width: 100%;
                     }}
                     </style>
-                    """
-                    st.markdown(button_style, unsafe_allow_html=True)
+                    """, unsafe_allow_html=True)
             
-                    if st.button(button_label, key=f"alt_ingre_{i}"):
+                    if st.button(button_label, key=key):
                         st.session_state["selected_alternative"] = alt
-                        selected_alt = alt
+
             # with cols[i]:
             #     is_selected = selected_alt == alt
     
