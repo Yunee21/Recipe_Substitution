@@ -4,6 +4,11 @@ import numpy as np
 import pandas as pd
 import pickle
 from deep_translator import GoogleTranslator
+from huggingface_hub import login
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from tqdm import tqdm
+import inflect
+from Levenshtein import distance
 
 
 def save2pickle(file_name: str, data):
@@ -72,3 +77,33 @@ def getNutLabels(disease_info: str):
 
     #print(nut_label_vec)
     return nut_label_vec
+
+
+def toSingular(word, p):
+    singular = p.singular_noun(word)
+    return singular if singular else word
+
+def calSim(a, b):
+    return distance(a,b)
+
+def extractIngredients(text):
+    """Extract only the ingredients from the structured output."""
+    match = re.search(r'ingredients:\n(- .+)', text, re.DOTALL)  # 'ingredients:' 다음의 리스트를 추출
+    if match:
+        ingredients_text = match.group(1)  # 그룹(1)만 가져오
+        ingredients_list = re.findall(r"-\s*(.+)", ingredients_text)  # 각 항목
+        return ingredients_list
+    return []
+
+def extractPairs(text):
+    """Llama 출력에서 (조리방법, 재료이름) 페어만 추출"""
+    pairs_section = text.split("pairs:")[-1]
+    pairs = re.findall(r"-\s*\(\s*'([^']+)'\s*,\s*'([^']*)'\s*\)", pairs_section)
+    return pairs
+
+def generateText(prompt, tokenizer, model, max_length=1000):
+    inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+    outputs = model.generate(**inputs, max_length=max_length, temperature=0.1, repetition_penalty=1.2)
+    #generated_text = tokenizer.batch_decode(outputs[:, inputs.input_ids.shape[1]:], skip_special_tokens=True)[0]
+    #return generated_text
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
