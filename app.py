@@ -108,7 +108,7 @@ def sidebar_menu():
             if st.button(f"{icon} {name}", key=btn_key, disabled=disabled):
                 st.session_state["selected_menu"] = name
 
-            st.markdown(f"""
+            st.markdown(f'''
             <style>
             div[data-testid="stButton"][id="{btn_key}"] > button {{
                 background-color: {'#ba3d60' if is_selected else '#ffe6ed'} !important;
@@ -128,7 +128,7 @@ def sidebar_menu():
                 color: white !important;
             }}
             </style>
-            """, unsafe_allow_html=True)
+            ''', unsafe_allow_html=True)
 
     # ✅ Updated for new Streamlit version (post-April 2024)
     query_params = st.query_params
@@ -341,6 +341,21 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
+@st.cache_resource
+def load_llama3():
+    HUGGINGFACE_TOKEN = "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"
+    login(token=HUGGINGFACE_TOKEN)
+    
+    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=torch.float16,  # load the mode with float16 for saving memory
+            device_map="auto"           # automatically allocate GPU
+    )
+    return tokenizer, model
+    
 def getIngredientKO(ingre_en):
     ingre_ko = []
     full_ingre = ingre_node_dct['name']
@@ -402,6 +417,46 @@ def recommend_page():
     st.markdown(directions[0])
     st.markdown(str(recipe_info['direction']))
 
+    tokenizer, model = load_llama3()
+
+    prompt = """
+    You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
+
+    Format the output as a single string like this:
+    Step 1. [Instruction]  
+    Step 2. [Instruction]  
+    ...  
+    Step N. [Instruction]
+    
+    Make sure to:
+    - Use all ingredients: {', '.join(ingredients)}
+    - Use these cooking verbs: {', '.join(directions)}
+    - Write each step naturally and clearly in Korean.
+    - Do NOT include any explanations outside the steps.
+    - Only return the formatted step-by-step string.
+    """
+    # 프롬프트를 토크나이즈
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    
+    # 모델 추론
+    with torch.no_grad():
+        output = model.generate(
+            **inputs,
+            max_new_tokens=512,       # 생성할 최대 토큰 수
+            temperature=0.7,          # 창의성 정도 (0.7~1.0 추천)
+            top_p=0.95,
+            do_sample=True,
+            eos_token_id=tokenizer.eos_token_id
+        )
+    
+    # 출력 디코딩
+    generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
+    
+    # 프롬프트 제거 (프롬프트 포함된 경우 제거할 수도 있음)
+    response = generated_text[len(prompt):].strip()
+    
+    st.markdown(response)
+
 
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal'] :
@@ -435,6 +490,8 @@ def recommend_page():
                     st.rerun()
 
         else:
+            
+
             st.markdown("---")
             st.markdown(f"### ✅ 대체된 레시피")
             st.markdown("#### 🧾 재료")
