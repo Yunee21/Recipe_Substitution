@@ -410,7 +410,6 @@ def recommend_page():
                 break
 
     if st.session_state['target']:
-        st.markdown("#### 🔁 대체할 재료를 찾지 못했습니다.")
         st.session_state['terminal'] = True
     else:
         st.session_state['terminal'] = False
@@ -449,48 +448,49 @@ def recommend_page():
 
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
-    st.markdown("#### 🔁 대체 재료를 선택하세요:")
-
-    alt_candidates = ['감자', '라자냐']
-    selected_alt = st.session_state.get("selected_alternative")
-
-    cols = st.columns(len(alt_candidates))
+        st.markdown("#### 🔁 대체 재료를 선택하세요:")
     
-    for i, alt in enumerate(alt_candidates):
-        with cols[i]:
-            is_selected = selected_alt == alt
-
-            button_label = f"✅ {alt}" if is_selected else alt
-            button_style = f"""
-            <style>
-            div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
-                background-color: {'#ba3d60' if is_selected else 'white'} !important;
-                color: {'white' if is_selected else '#ba3d60'} !important;
-                border: 2px solid #ba3d60 !important;
-                border-radius: 8px !important;
-                font-weight: 600 !important;
-            }}
-            </style>
-            """
-            st.markdown(button_style, unsafe_allow_html=True)
-
-            if st.button(button_label, key=f"alt_ingre_{i}"):
-                st.session_state["selected_alternative"] = alt
-                selected_alt = alt  # 바로 반영
-                # rerun 하지 않고 아래에서 바로 보여줌
-
-    # ✅ 버튼 아래에 대체 결과 즉시 출력
-    if selected_alt:
-        st.markdown("---")
-        st.markdown(f"### ✅ 대체된 레시피")
-        st.markdown("#### 🧾 재료")
-        sub = selected_alt
-        orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {sub} ***'
-        st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
-
-        st.markdown("#### 🍳 조리 방법")
-        st.markdown("🧑‍🍳 대체된 조리법은 여기에 추가해주세요!")  # 예시
-
+        alt_candidates = ['감자', '라자냐']
+        selected_alt = st.session_state.get("selected_alternative")
+    
+        cols = st.columns(len(alt_candidates))
+        
+        for i, alt in enumerate(alt_candidates):
+            with cols[i]:
+                is_selected = selected_alt == alt
+    
+                button_label = f"✅ {alt}" if is_selected else alt
+                button_style = f"""
+                <style>
+                div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
+                    background-color: {'#ba3d60' if is_selected else 'white'} !important;
+                    color: {'white' if is_selected else '#ba3d60'} !important;
+                    border: 2px solid #ba3d60 !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                }}
+                </style>
+                """
+                st.markdown(button_style, unsafe_allow_html=True)
+    
+                if st.button(button_label, key=f"alt_ingre_{i}"):
+                    st.session_state["selected_alternative"] = alt
+                    selected_alt = alt  # 바로 반영
+                    # rerun 하지 않고 아래에서 바로 보여줌
+    
+        # ✅ 버튼 아래에 대체 결과 즉시 출력
+        if selected_alt:
+            st.markdown("---")
+            st.markdown(f"### ✅ 대체된 레시피")
+            st.markdown("#### 🧾 재료")
+            sub = selected_alt
+            orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {sub} ***'
+            st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
+    
+            st.markdown("#### 🍳 조리 방법")
+            st.markdown("🧑‍🍳 대체된 조리법은 여기에 추가해주세요!")  # 예시
+    else:
+        st.markdown("#### 🔁 대체할 재료를 찾지 못했습니다.")
 
 # -----------------------
 # ✅ 제출 여부 확인 및 자동 이동
