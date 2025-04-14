@@ -418,13 +418,13 @@ def recommend_page():
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
+    
     # *** 4. 조리 방법 불러오기
     st.markdown("#### 🍳 조리 방법")
     
-    
     recipe_law = uts.loadPickle('data/recipe_dct.pkl')
     direc_law = recipe_law[name_eng]['direction']
-    formatted = '\n'.join([f"Step {i+1}. {step}" for i, step in enumerate(steps)])
+    formatted = '\n'.join([f"Step {i+1}. {step}" for i, step in enumerate(direc_law)])
     st.markdown(formatted)
 
     tokenizer, model = load_llama3()
