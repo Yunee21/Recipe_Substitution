@@ -8,7 +8,6 @@ from huggingface_hub import login
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from tqdm import tqdm
 import inflect
-from Levenshtein import distance
 
 
 def save2pickle(file_name: str, data):
