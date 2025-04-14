@@ -135,7 +135,7 @@ def sidebar_menu():
         if "selected_menu" in query_params:
             selected = query_params["selected_menu"][0]
             st.session_state["selected_menu"] = selected
-        """ 
+        '''
         for name, icon in menu_items.items():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
@@ -168,7 +168,7 @@ def sidebar_menu():
             </style>
             """
             st.markdown(style, unsafe_allow_html=True)
-        """
+        '''
 
 
 # -----------------------
