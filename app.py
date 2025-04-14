@@ -479,7 +479,7 @@ def recommend_page():
         target_en = recipe_dct[name_eng]['ingredient'][st.session_state['target_idx']]
         st.markdown(target_en)
         gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
-        alt_candidates = findSub(gnn_emb_dct, st.session_state['target_en'], k=5)
+        alt_candidates = findSub(gnn_emb_dct, [target_en], k=5)
         st.markdown(alt_candidates)
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
         alt_candidates = ['a']
