@@ -7,3 +7,4 @@ torch-geometric
 deep_translator
 huggingface_hub
 transformers
+inflect 
