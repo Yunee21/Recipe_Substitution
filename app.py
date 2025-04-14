@@ -100,24 +100,6 @@ def sidebar_menu():
 
     with st.sidebar:
         st.markdown("### 메뉴 선택")
-        selected_index = list(menu_items.keys()).index(st.session_state["selected_menu"])
-        
-        for i, (name, icon) in enumerate(menu_items.items()):
-            disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
-            btn_key = f"menu_{i}"
-            if st.button(f"{icon} {name}", key=btn_key, disabled=disabled):
-                st.session_state["selected_menu"] = name
-
-        # 🔥 선택된 메뉴 스타일만 nth-of-type으로 정확하게 타겟팅
-        st.markdown(f"""
-        <style>
-        section[data-testid="stSidebar"] button:nth-of-type({selected_index + 2}) {{
-            background-color: #ba3d60 !important;
-            color: white !important;
-        }}
-        </style>
-        """, unsafe_allow_html=True)
-        '''
         for name, icon in menu_items.items():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
@@ -150,7 +132,7 @@ def sidebar_menu():
             </style>
             """
             st.markdown(style, unsafe_allow_html=True)
-        '''
+
 
 
 # -----------------------
