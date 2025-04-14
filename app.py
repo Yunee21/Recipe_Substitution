@@ -140,7 +140,12 @@ def profile_page():
             kidney_stage = st.selectbox("단계 선택", ["1단계", "2단계", "3단계", "4단계", "5단계", "혈액투석", "복막투석"])
         else:
             egfr = st.number_input("eGFR 수치", 0.0, 200.0, step=0.1)
-            kidney_stage = inferStageFromEgfr(egfr)
+            if egfr >= 90: kidney_stage = "1단계"
+            elif 60 <= egfr < 90: kidney_stage = "2단계"
+            elif 30 <= egfr < 60: kidney_stage = "3단계"
+            elif 15 <= egfr < 30: kidney_stage = "4단계"
+            elif egfr < 15: kidney_stage = "5단계"
+            kidney_dialysis = st.selectbox("투석 여부", ["비투석", "복막투석", "혈액투석"])
 
         st.session_state.update({
             "gender": gender,
