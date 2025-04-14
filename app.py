@@ -504,21 +504,21 @@ def recommend_page():
             st.markdown("#### 🍳 조리 방법")
             st.markdown("🧑‍🍳 대체된 조리법은 여기에 추가해주세요!")  
             
-            HUGGINGFACE_TOKEN = "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"
-            login(token=HUGGINGFACE_TOKEN)
-            model_name = "meta-llama/Llama-3.1-8B-Instruct"
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            if torch.cuda.is_available():
-                model = AutoModelForCausalLM.from_pretrained(
-                    model_name,
-                    torch_dtype=torch.float16,
-                    device_map="auto"
-                )
-            else:
-                model = AutoModelForCausalLM.from_pretrained(
-                    model_name,
-                    torch_dtype=torch.float32
-                )
+            # HUGGINGFACE_TOKEN = "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"
+            # login(token=HUGGINGFACE_TOKEN)
+            # model_name = "meta-llama/Llama-3.1-8B-Instruct"
+            # tokenizer = AutoTokenizer.from_pretrained(model_name)
+            # if torch.cuda.is_available():
+            #     model = AutoModelForCausalLM.from_pretrained(
+            #         model_name,
+            #         torch_dtype=torch.float16,
+            #         device_map="auto"
+            #     )
+            # else:
+            #     model = AutoModelForCausalLM.from_pretrained(
+            #         model_name,
+            #         torch_dtype=torch.float32
+            #     )
     
             prompt = """
             You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
@@ -535,7 +535,7 @@ def recommend_page():
             - Write each step naturally and clearly in Korean.
             - Do NOT include any explanations outside the steps.
             - Only return the formatted step-by-step string.
-        """
+            """
 
 
 
