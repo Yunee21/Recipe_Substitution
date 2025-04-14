@@ -290,8 +290,8 @@ def recipe_input_page():
             if st.button("레시피 제출"):
                 st.success(f"'{st.session_state['recipe_selected']}' 레시피가 선택되었습니다.")
                 st.session_state["recipe_done"] = True
-                st.session_state["selected_recipe_name_ko"] = suggestions
-                idx = recipe_name_ko.index(suggestions)
+                st.session_state["selected_recipe_name_ko"] = st.session_state["recipe_selected"]
+                idx = recipe_name_ko.index(st.session_state["recipe_selected"])
                 st.session_state["selected_recipe_name_eng"] = recipe_name_en[idx]
                 
         st.markdown('</div>', unsafe_allow_html=True)
