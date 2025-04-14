@@ -424,10 +424,10 @@ def recommend_page():
     st.markdown("#### 🍳 조리 방법")
     
     direc_law = recipe_law[name_eng]['direction']
-    formatted = '\n'.join([f"Step {i+1}. {uts.eng2ko(step)}" for i, step in enumerate(direc_law)])
-    st.markdown(formatted)
+    for i, step in enumerate(direc_law):
+        st.write(f"Step {i+1}. {uts.eng2ko(step)}")
 
-    tokenizer, model = load_llama3()
+    # tokenizer, model = load_llama3()
 
     prompt = """
     You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
