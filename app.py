@@ -237,7 +237,7 @@ def ingredient_page():
                     )
 
             # ✅ 제출 시 매핑 실행
-            if st.button("식재료 제출", key="ingredient_submit"):
+            if st.button("보유 식재료 제출", key="ingredient_submit"):
                 user_ingredients = st.session_state["ingredients"]
                 matched_dict = match_ingredients_to_standard(user_ingredients, ingre_node_ko)
                 st.session_state["ingredient_mapping"] = matched_dict
