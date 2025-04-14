@@ -105,8 +105,35 @@ def sidebar_menu():
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
 
             btn_key = f"menu_{name}"
-            if st.button(f"{icon} {name}", key=btn_key, disabled=disabled):
+            button_label = f"{icon} {name}"
+
+            # 생성된 버튼
+            clicked = st.button(button_label, key=btn_key, disabled=disabled)
+            if clicked:
                 st.session_state["selected_menu"] = name
+
+            # 선택된 메뉴에만 스타일 적용
+            custom_style = f"""
+            <style>
+            div[data-testid="stButton"][id="{btn_key}"] > button {{
+                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
+                color: {'white' if is_selected else '#ba3d60'} !important;
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-size: 16px;
+                font-weight: 600;
+                border: none;
+                width: 100%;
+                text-align: left;
+                transition: all 0.3s ease;
+            }}
+            div[data-testid="stButton"][id="{btn_key}"] > button:hover {{
+                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
+                color: white !important;
+            }}
+            </style>
+            """
+            st.markdown(custom_style, unsafe_allow_html=True)
 
 
 
