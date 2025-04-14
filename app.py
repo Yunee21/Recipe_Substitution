@@ -293,9 +293,10 @@ def load_recipe_dct():
     recipe_dct = uts.loadPickle("data/recipe_graph_dct.pkl")
     recipe_name_en = uts.loadPickle("data/recipe_name_en.pkl")
     recipe_name_ko = uts.loadPickle('data/recipe_name_ko.pkl')
-    return recipe_dct, recipe_name_en, recipe_name_ko
+    recipe_law = uts.loadPickle('data/recipe_dct.pkl')
+    return recipe_dct, recipe_name_en, recipe_name_ko, recipe_law
     
-recipe_dct, recipe_name_en, recipe_name_ko = load_recipe_dct()
+recipe_dct, recipe_name_en, recipe_name_ko, recipe_law = load_recipe_dct()
 
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
@@ -422,7 +423,6 @@ def recommend_page():
     # *** 4. 조리 방법 불러오기
     st.markdown("#### 🍳 조리 방법")
     
-    recipe_law = uts.loadPickle('data/recipe_dct.pkl')
     direc_law = recipe_law[name_eng]['direction']
     formatted = '\n'.join([f"Step {i+1}. {step}" for i, step in enumerate(direc_law)])
     st.markdown(formatted)
