@@ -295,9 +295,10 @@ def load_recipe_dct():
     recipe_name_en = uts.loadPickle("data/recipe_name_en.pkl")
     recipe_name_ko = uts.loadPickle('data/recipe_name_ko.pkl')
     recipe_law = uts.loadPickle('data/recipe_dct.pkl')
-    return recipe_dct, recipe_name_en, recipe_name_ko, recipe_law
+    gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
+    return recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct
     
-recipe_dct, recipe_name_en, recipe_name_ko, recipe_law = load_recipe_dct()
+recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct = load_recipe_dct()
 
 def recipe_input_page():
     box_class = "box-section active" if st.session_state["selected_menu"] == "레시피 입력" else "box-section"
@@ -402,12 +403,6 @@ def findSub(gnn_emb: dict, ingre, k=5):
     gnn_topk = get_top_k(gnn_emb, ingre, k)
     return gnn_topk
 
-@st.cache_resource
-def loadGNNEmb():
-    gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
-    return gnn_emb_dct
-gnn_emb_dct = loadGNNEmb()
-
 def recommend_page():
     
     # *** 1. 선택된 레시피 불러오기 ***
@@ -489,9 +484,10 @@ def recommend_page():
         
         target_en = recipe_dct[name_eng]['ingredient'][st.session_state['target_idx']]
         st.markdown(target_en)
-        gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
+        
         alt_candidates = findSub(gnn_emb_dct, target_en, k=5)
         st.markdown(alt_candidates)
+        
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
         alt_candidates = ['a']
         selected_alt = st.session_state.get("selected_alternative")
