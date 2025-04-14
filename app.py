@@ -341,20 +341,20 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-@st.cache_resource
-def load_llama3():
-    HUGGINGFACE_TOKEN = "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"
-    login(token=HUGGINGFACE_TOKEN)
+# @st.cache_resource
+# def load_llama3():
+#     HUGGINGFACE_TOKEN = "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"
+#     login(token=HUGGINGFACE_TOKEN)
     
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+#     model_name = "meta-llama/Llama-3.1-8B-Instruct"
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16,  # load the mode with float16 for saving memory
-            device_map="auto"           # automatically allocate GPU
-    )
-    return tokenizer, model
+#     tokenizer = AutoTokenizer.from_pretrained(model_name)
+#     model = AutoModelForCausalLM.from_pretrained(
+#             model_name,
+#             torch_dtype=torch.float16,  # load the mode with float16 for saving memory
+#             device_map="auto"           # automatically allocate GPU
+#     )
+#     return tokenizer, model
     
 def getIngredientKO(ingre_en):
     ingre_ko = []
@@ -417,7 +417,18 @@ def recommend_page():
     st.markdown(directions[0])
     st.markdown(str(recipe_info['direction']))
 
-    tokenizer, model = load_llama3()
+    # tokenizer, model = load_llama3()
+    HUGGINGFACE_TOKEN = "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"
+    login(token=HUGGINGFACE_TOKEN)
+    
+    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=torch.float16,  # load the mode with float16 for saving memory
+            device_map="auto"           # automatically allocate GPU
+    )
 
     prompt = """
     You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
