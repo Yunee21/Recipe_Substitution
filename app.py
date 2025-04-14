@@ -418,7 +418,7 @@ def recommend_page():
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
         if ingre_ko in exchange_ingre_ko_lst:
             st.session_state['targets'].append(ingre_ko)
-    st.session_state['target'] = st.session_state['targets'][0]
+            st.session_state['target'] = ingre_ko
     
     if st.session_state['target']:
         for ingre_ko in list(orig_recipe_ko['ingredients']):
