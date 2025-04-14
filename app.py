@@ -7,6 +7,7 @@ import time
 from difflib import get_close_matches
 from huggingface_hub import login
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from sklearn.metrics.pairwise import cosine_similarity
 from lib import utils as uts
 
 
