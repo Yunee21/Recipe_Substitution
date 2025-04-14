@@ -116,7 +116,7 @@ def sidebar_menu():
             custom_style = f"""
             <style>
             div[data-testid="stButton"][id="{btn_key}"] > button {{
-                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
+                background-color: {'#ba3d60' if is_selected else 'white'} !important;
                 color: {'white' if is_selected else '#ba3d60'} !important;
                 border-radius: 8px;
                 padding: 10px 14px;
