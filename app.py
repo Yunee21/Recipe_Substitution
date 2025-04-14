@@ -500,36 +500,34 @@ def recommend_page():
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
         selected_alt = st.session_state.get("selected_alternative")
     
-        cols = st.columns(len(alt_candidates))
-        
-        for i, alt in enumerate(alt_candidates):
-            cols = st.columns(5)
 
-            for i, alt in enumerate(alt_candidates):
-                col = cols[i % 5]  # 열은 고정 반복 (0~4)
-                key = f"alt_ingre_{i}_{alt}"  # ✅ key를 더 고유하게!
-            
-                with col:
-                    is_selected = st.session_state.get("selected_alternative") == alt
-                    button_label = f"✅ {alt}" if is_selected else alt
-            
-                    # 스타일
-                    st.markdown(f"""
-                    <style>
-                    div[data-testid="stButton"][id="{key}"] button {{
-                        background-color: {'#ba3d60' if is_selected else 'white'} !important;
-                        color: {'white' if is_selected else '#ba3d60'} !important;
-                        border: 2px solid #ba3d60 !important;
-                        border-radius: 8px !important;
-                        font-weight: 600 !important;
-                        white-space: nowrap !important;
-                        width: 100%;
-                    }}
-                    </style>
-                    """, unsafe_allow_html=True)
-            
-                    if st.button(button_label, key=key):
-                        st.session_state["selected_alternative"] = alt
+        cols = st.columns(5)
+
+        for i, alt in enumerate(alt_candidates):
+            col = cols[i % 5]  # 열은 고정 반복 (0~4)
+            key = f"alt_ingre_{i}_{alt}"  # ✅ key를 더 고유하게!
+        
+            with col:
+                is_selected = st.session_state.get("selected_alternative") == alt
+                button_label = f"✅ {alt}" if is_selected else alt
+        
+                # 스타일
+                st.markdown(f"""
+                <style>
+                div[data-testid="stButton"][id="{key}"] button {{
+                    background-color: {'#ba3d60' if is_selected else 'white'} !important;
+                    color: {'white' if is_selected else '#ba3d60'} !important;
+                    border: 2px solid #ba3d60 !important;
+                    border-radius: 8px !important;
+                    font-weight: 600 !important;
+                    white-space: nowrap !important;
+                    width: 100%;
+                }}
+                </style>
+                """, unsafe_allow_html=True)
+        
+                if st.button(button_label, key=key):
+                    st.session_state["selected_alternative"] = alt
 
 
     
