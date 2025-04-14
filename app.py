@@ -319,7 +319,16 @@ def getAlternativeIngredients(target):
         "소고기": ["닭고기", "두부", "버섯", "콩단백", "오징어"],
     }
     return dummy_map.get(target, ["두부", "버섯", "닭고기", "계란", "오징어"])
-    
+
+def getIngredientKO(ingre_en):
+    ingre_ko = []
+    full_ingre = ingre_node_dct['name']
+    for ingre in ingre_en:
+        idx = full_ingre.index(ingre)
+        ko = ingre_node_ko[idx]
+        ingre_ko.append(ko)
+    return ingre_ko
+
 def recommend_page():
     st.markdown("### 🧾 대체 레시피 추천")
 
@@ -330,9 +339,19 @@ def recommend_page():
     name_ko = st.session_state["selected_recipe_name_ko"]
     recipe_info = recipe_dct[name_eng]
 
-    # 예시 구조: recipe_info = {"재료": [...], "조리법": "...", "대체대상": "돼지고기"}
-    ingredients = recipe_info.get("재료", [])
-    cook_steps = recipe_info.get("조리법", "")
+    orig_recipe_ko = pd.DataFrame([], columns=['recipe','ingredients'])
+    len_ingre = len(recipe_info['ingredient'])
+    orig_recipe_ko['recipe'] = [name_ko] + [''] * (len_ingre - 1)
+    orig_recipe_ko['ingredients'] = getIngredientKO(recipe_info['ingredient'])
+    directions = orig_recipe_ko['direction'].apply(lambda x: '\n'.join(x))
+    
+    st.markdown("#### 🧾 재료")
+    st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
+    st.markdown("#### 🍳 조리 방법")
+    st.markdown(directions)
+    
+    
+    ingredients = ['감자', '라면']
     target = recipe_info.get("대체대상", ingredients[0])  # 예시용
 
     st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
