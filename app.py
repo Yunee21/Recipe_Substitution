@@ -478,18 +478,17 @@ def recommend_page():
                     st.session_state["selected_alternative"] = alt
                     st.rerun()
 
-        else:
-            
+    else:
+        
+        st.markdown("---")
+        st.markdown(f"### ✅ 대체된 레시피")
+        st.markdown("#### 🧾 재료")
+        sub = st.session_state["selected_alternative"]
+        orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {sub} ***'
+        st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
-            st.markdown("---")
-            st.markdown(f"### ✅ 대체된 레시피")
-            st.markdown("#### 🧾 재료")
-            sub = st.session_state["selected_alternative"]
-            orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {sub} ***'
-            st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
-
-            st.markdown("#### 🍳 조리 방법")
-            st.markdown('ㅁ')
+        st.markdown("#### 🍳 조리 방법")
+        st.markdown('ㅁ')
 
 
 # -----------------------
