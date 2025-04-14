@@ -345,26 +345,6 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-# @st.cache_resource
-# def load_llama3():
-#     login(token="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")
-
-#     model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
-
-#     tokenizer = AutoTokenizer.from_pretrained(
-#         model_name,
-#         trust_remote_code=True,
-#         use_auth_token=True
-#     )
-#     model = AutoModelForCausalLM.from_pretrained(
-#         model_name,
-#         torch_dtype=torch.float16,
-#         device_map="auto",
-#         low_cpu_mem_usage=True,
-#         trust_remote_code=True,
-#         use_auth_token=True
-#     )
-#     return tokenizer, model
 
 def getIngredientKO(ingre_en):
     ingre_ko = []
@@ -467,25 +447,6 @@ def recommend_page():
     for i, step in enumerate(direc_law):
         st.write(f"Step {i+1}. {uts.eng2ko(step)}")
 
-    # tokenizer, model = load_llama3()
-
-    prompt = """
-    You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
-
-    Format the output as a single string like this:
-    Step 1. [Instruction]  
-    Step 2. [Instruction]  
-    ...  
-    Step N. [Instruction]
-    
-    Make sure to:
-    - Use all ingredients: {', '.join(ingredients)}
-    - Use these cooking verbs: {', '.join(directions)}
-    - Write each step naturally and clearly in Korean.
-    - Do NOT include any explanations outside the steps.
-    - Only return the formatted step-by-step string.
-    """
-
 
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
@@ -529,8 +490,6 @@ def recommend_page():
                 if st.button(button_label, key=key):
                     st.session_state["selected_alternative"] = alt
 
-
-    
         # ✅ 버튼 아래에 대체 결과 즉시 출력
         if selected_alt:
             st.markdown("---")
@@ -541,7 +500,45 @@ def recommend_page():
             st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
     
             st.markdown("#### 🍳 조리 방법")
-            st.markdown("🧑‍🍳 대체된 조리법은 여기에 추가해주세요!")  # 예시
+            st.markdown("🧑‍🍳 대체된 조리법은 여기에 추가해주세요!")  
+            
+            HUGGINGFACE_TOKEN = "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"
+            login(token=HUGGINGFACE_TOKEN)
+            model_name = "meta-llama/Llama-3.1-8B-Instruct"
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            if torch.cuda.is_available():
+                model = AutoModelForCausalLM.from_pretrained(
+                    model_name,
+                    torch_dtype=torch.float16,
+                    device_map="auto"
+                )
+            else:
+                model = AutoModelForCausalLM.from_pretrained(
+                    model_name,
+                    torch_dtype=torch.float32
+                )
+    
+            prompt = """
+            You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
+        
+            Format the output as a single string like this:
+            Step 1. [Instruction]  
+            Step 2. [Instruction]  
+            ...  
+            Step N. [Instruction]
+            
+            Make sure to:
+            - Use all ingredients: {', '.join(ingredients)}
+            - Use these cooking verbs: {', '.join(directions)}
+            - Write each step naturally and clearly in Korean.
+            - Do NOT include any explanations outside the steps.
+            - Only return the formatted step-by-step string.
+        """
+
+
+
+
+    
     else:
         st.markdown("#### 🔁 대체할 재료를 찾지 못했습니다.")
 
