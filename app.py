@@ -475,7 +475,9 @@ def recommend_page():
 
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
-        
+
+        st.markdown(st.session_state['target_en'])
+        st.markdown(gnn_emb_dct.shape)
         alt_candidates = findSub(gnn_emb_dct, st.session_state['target_en'], k=5)
         
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
