@@ -342,27 +342,27 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-@st.cache_resource
-def load_llama3():
-    login(token="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")
+# @st.cache_resource
+# def load_llama3():
+#     login(token="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")
 
-    model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+#     model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name,
-        trust_remote_code=True,
-        use_auth_token=True
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        torch_dtype=torch.float16,
-        device_map="auto",
-        low_cpu_mem_usage=True,
-        trust_remote_code=True,
-        use_auth_token=True
-    )
+#     tokenizer = AutoTokenizer.from_pretrained(
+#         model_name,
+#         trust_remote_code=True,
+#         use_auth_token=True
+#     )
+#     model = AutoModelForCausalLM.from_pretrained(
+#         model_name,
+#         torch_dtype=torch.float16,
+#         device_map="auto",
+#         low_cpu_mem_usage=True,
+#         trust_remote_code=True,
+#         use_auth_token=True
+#     )
+#     return tokenizer, model
 
-    return tokenizer, model
 def getIngredientKO(ingre_en):
     ingre_ko = []
     full_ingre = ingre_node_dct['name']
@@ -424,7 +424,7 @@ def recommend_page():
     st.markdown("#### 🍳 조리 방법")
     
     direc_law = recipe_law[name_eng]['direction']
-    formatted = '\n'.join([f"Step {i+1}. {step}" for i, step in enumerate(direc_law)])
+    formatted = '\n'.join([f"Step {i+1}. {uts.eng2ko(step)}" for i, step in enumerate(direc_law)])
     st.markdown(formatted)
 
     tokenizer, model = load_llama3()
