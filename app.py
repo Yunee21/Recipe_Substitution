@@ -503,9 +503,11 @@ def recommend_page():
         cols = st.columns(len(alt_candidates))
         
         for i, alt in enumerate(alt_candidates):
-            with cols[i]:
+            col = cols[i % 5]  # 5칸 넘어가면 아래줄로 내려가게 (하지만 5개까지만 표시할 경우엔 무관)
+        
+            with col:
                 is_selected = selected_alt == alt
-    
+        
                 button_label = f"✅ {alt}" if is_selected else alt
                 button_style = f"""
                 <style>
@@ -515,15 +517,36 @@ def recommend_page():
                     border: 2px solid #ba3d60 !important;
                     border-radius: 8px !important;
                     font-weight: 600 !important;
+                    width: 100%;
                 }}
                 </style>
                 """
                 st.markdown(button_style, unsafe_allow_html=True)
-    
+        
                 if st.button(button_label, key=f"alt_ingre_{i}"):
                     st.session_state["selected_alternative"] = alt
                     selected_alt = alt  # 바로 반영
-                    # rerun 하지 않고 아래에서 바로 보여줌
+            # with cols[i]:
+            #     is_selected = selected_alt == alt
+    
+            #     button_label = f"✅ {alt}" if is_selected else alt
+            #     button_style = f"""
+            #     <style>
+            #     div[data-testid="stButton"][id="alt_ingre_{i}"] button {{
+            #         background-color: {'#ba3d60' if is_selected else 'white'} !important;
+            #         color: {'white' if is_selected else '#ba3d60'} !important;
+            #         border: 2px solid #ba3d60 !important;
+            #         border-radius: 8px !important;
+            #         font-weight: 600 !important;
+            #     }}
+            #     </style>
+            #     """
+            #     st.markdown(button_style, unsafe_allow_html=True)
+    
+            #     if st.button(button_label, key=f"alt_ingre_{i}"):
+            #         st.session_state["selected_alternative"] = alt
+            #         selected_alt = alt  # 바로 반영
+            #         # rerun 하지 않고 아래에서 바로 보여줌
     
         # ✅ 버튼 아래에 대체 결과 즉시 출력
         if selected_alt:
