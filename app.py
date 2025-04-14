@@ -311,7 +311,7 @@ def recipe_input_page():
         user_input = st.text_input("레시피명을 입력하세요", key="recipe_input", placeholder="예: 김치찌개")
 
         # ✅ 2. 실시간 추천 리스트 보여주기 (구글처럼)
-        suggestions = get_close_matches(user_input, recipe_name_ko, n=5, cutoff=0.3) if user_input else []
+        suggestions = get_close_matches(user_input, recipe_name_ko, n=10, cutoff=0.3) if user_input else []
 
         if suggestions:
             selected_recipe = st.selectbox("추천 레시피", suggestions, key="recipe_suggest")
