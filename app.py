@@ -375,8 +375,14 @@ def getIngredientKO(ingre_en):
         ingre_ko.append(ko)
     return ingre_ko
     
-def get_top_k(emb_dct, target_name, k=5, L2=False):
+def get_top_k(emb_dct, target_name, others_name, k=5, L2=False):
+
+    mean_vector = np.zeros((1, emb_dct[others_name[0]].shape[0]))
+    for other_name in others_name:
+        mean_vector += emb_dct[other_name].reshape(1,-1)
+    mean_vector = mean_vector / len(others_name)
     
+    others_name
     if (L2):
         names = list(emb_dct.keys())
         vectors = np.array([emb_dct[n] for n in names])
@@ -393,6 +399,7 @@ def get_top_k(emb_dct, target_name, k=5, L2=False):
         vectors = np.array([emb_dct[n] for n in names])
     
         target_vector = emb_dct[target_name].reshape(1,-1)
+        target_vector = mean_vector
         sims = cosine_similarity(target_vector, vectors).flatten()
     
         topk_indices = sims.argsort()[-(k+1):][::-1]  # exclude self
@@ -446,8 +453,10 @@ def recommend_page():
         st.session_state['terminal'] = True
     else:
         st.session_state['terminal'] = False
-        st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(st.session_state['target'])
-        orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {st.session_state['target']} ***'
+        target_ko = st.session_state['target']
+        st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(target_ko)
+        orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {target_ko} ***'
+        sleep(0.1)
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
@@ -485,9 +494,8 @@ def recommend_page():
         target_idx = st.session_state['target_idx']
         target_en = recipe_dct[name_eng]['ingredient'][target_idx]
         others = [ingre for ingre in recipe_dct[name_eng]['ingredient'] if ingre != target_en]
-        st.markdown(others)
         
-        alt_candidates_en = findSub(gnn_emb_dct, target_en, k=5)
+        alt_candidates_en = findSub(gnn_emb_dct, target_en, others, k=5)
         alt_candidates = [uts.eng2ko(alt_en) for alt_en in alt_candidates_en]
         
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
