@@ -135,40 +135,7 @@ def sidebar_menu():
         if "selected_menu" in query_params:
             selected = query_params["selected_menu"][0]
             st.session_state["selected_menu"] = selected
-        '''
-        for name, icon in menu_items.items():
-            is_selected = st.session_state["selected_menu"] == name
-            disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
-            
-            btn_key = f"menu_{name}"
-            clicked = st.button(f"{icon} {name}", key=btn_key, disabled=disabled)
-
-            if clicked:
-                st.session_state["selected_menu"] = name
-
-            # ⭐ 스타일: 선택된 버튼만 핑크 배경 + 흰 글씨
-            style = f"""
-            <style>
-            div[data-testid="stButton"][id="{btn_key}"] > button {{
-                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
-                color: {'white' if is_selected else '#ba3d60'} !important;
-                font-weight: 600;
-                font-size: 16px;
-                padding: 10px 14px;
-                border-radius: 8px;
-                border: none;
-                width: 100%;
-                text-align: left;
-                transition: all 0.3s ease;
-            }}
-            div[data-testid="stButton"][id="{btn_key}"] > button:hover {{
-                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
-                color: white !important;
-            }}
-            </style>
-            """
-            st.markdown(style, unsafe_allow_html=True)
-        '''
+       
 
 
 # -----------------------
