@@ -343,7 +343,7 @@ def recommend_page():
     len_ingre = len(recipe_info['ingredient'])
     orig_recipe_ko['recipe'] = [name_ko] + [''] * (len_ingre - 1)
     orig_recipe_ko['ingredients'] = getIngredientKO(recipe_info['ingredient'])
-    directions = recipe_info['direction'].apply(lambda x: '\n'.join(x))
+    directions = ['\n'.join(x) for x in recipe_info['direction']]
     
     st.markdown("#### 🧾 재료")
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
