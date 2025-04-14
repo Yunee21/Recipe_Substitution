@@ -433,10 +433,11 @@ def recommend_page():
         st.session_state['terminal'] = True
     else:
         st.session_state['terminal'] = False
-        target_ko = st.session_state['target'][0]
-        st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(target_ko)
-        orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {target_ko} ***'
-        sleep(0.1)
+        if (len(st.session_state['target']) >= 1):
+            target_ko = st.session_state['target'][0]
+            st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(target_ko)
+            orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {target_ko} ***'
+            sleep(0.1)
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
