@@ -342,29 +342,29 @@ def recommend_page():
     st.markdown("#### 🧾 재료")
     
     # *** 3. 대체 재료 찾기 ***
-    target = ''
-    target_idx = 0
+    st.session_state[target] = []
+    st.session_state[target_idx] = 0
     exchange_table_dct = uts.loadPickle('data/exchange_table_dct.pkl')
     for ingre_ko in list(orig_recipe_ko['ingredients']):
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
         if ingre_ko in exchange_ingre_ko_lst:
-            target = ingre_ko
+            st.session_state[target] = ingre_ko
             break
     
-    if (target == ''):
+    if st.session_state[target]:
         for ingre_ko in list(orig_recipe_ko['ingredients']):
             exchange_ingre_ko_lst = list(exchange_table_dct.keys())
             matches = get_close_matches(ingre_ko, exchange_ingre_ko_lst, n=1, cutoff=0.8)
             if matches:
-                target = ingre_ko
+                st.session_state[target] = ingre_ko
 
-    if (target == ''):
+    if st.session_state[target]:
         st.markdown("#### 🔁 대체할 재료를 찾지 못했습니다.")
         st.session_state['terminal'] = True
     else:
         st.session_state['terminal'] = False
-        target_idx = orig_recipe_ko['ingredients'].to_list().index(target)
-        orig_recipe_ko.at[target_idx, 'ingredients'] = f'*** {target} ***'
+        st.session_state[target_idx] = orig_recipe_ko['ingredients'].to_list().index(st.session_state[target])
+        orig_recipe_ko.at[target_idx, 'ingredients'] = f'*** {st.session_state[target]} ***'
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
@@ -393,7 +393,7 @@ def recommend_page():
             st.markdown(f"### ✅ 대체된 레시피")
             st.markdown("#### 🧾 재료")
             sub = st.session_state["selected_alternative"]
-            orig_recipe_ko.at[target_idx, 'ingredients'] = f'*** {sub} ***'
+            orig_recipe_ko.at[st.session_state[target_idx], 'ingredients'] = f'*** {sub} ***'
             st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
 
             st.markdown("#### 🍳 조리 방법")
