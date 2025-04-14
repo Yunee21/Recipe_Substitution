@@ -39,7 +39,7 @@ def init_app():
 # 🎨 스타일
 # -----------------------
 def inject_custom_css():
-    st.markdown("""
+    st.markdown('''
     <style>
     .stApp { background-color: #ffffff; }
     section[data-testid="stSidebar"] {
@@ -85,7 +85,7 @@ def inject_custom_css():
         color: white !important;
     }
     </style>
-    """, unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
 
 # -----------------------
 # 📋 사이드바 메뉴
@@ -141,7 +141,7 @@ def sidebar_menu():
             opacity = "0.5" if disabled else "1.0"
 
             # 버튼 HTML 직접 생성
-            button_html = f"""
+            button_html = f'''
             <form action="" method="post">
                 <button name="selected_menu" value="{name}" type="submit"
                     style="
@@ -164,7 +164,7 @@ def sidebar_menu():
                     {icon} {name}
                 </button>
             </form>
-            """
+            '''
             st.markdown(button_html, unsafe_allow_html=True)
 
         # 선택한 메뉴를 반영
@@ -227,7 +227,7 @@ def profile_page():
                 st.session_state["profile_done"] = True
                 st.session_state["first_submitted"] = True
         
-        st.markdown("""
+        st.markdown('''
         <style>
         div[data-testid="stButton"][id="profile_submit"] > button {
             background-color: white !important;
@@ -246,7 +246,7 @@ def profile_page():
             color: white !important;
         }
         </style>
-        """, unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
 
 
 # -----------------------
