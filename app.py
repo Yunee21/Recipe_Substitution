@@ -382,7 +382,6 @@ def get_top_k(emb_dct, target_name, others_name, k=5, L2=False):
         mean_vector += emb_dct[other_name].reshape(1,-1)
     mean_vector = mean_vector / len(others_name)
     
-    others_name
     if (L2):
         names = list(emb_dct.keys())
         vectors = np.array([emb_dct[n] for n in names])
@@ -407,8 +406,8 @@ def get_top_k(emb_dct, target_name, others_name, k=5, L2=False):
 
     return topk_names
     
-def findSub(gnn_emb: dict, ingre, others_name, k=5):
-    gnn_topk = get_top_k(gnn_emb, ingre, others_name, k=5, L2=False)
+def findSub(gnn_emb: dict, ingre, others_name, k=5, L2=False):
+    gnn_topk = get_top_k(gnn_emb, ingre, others_name, k=k, L2=L2)
     return gnn_topk
 
 def recommend_page():
@@ -495,7 +494,7 @@ def recommend_page():
         target_en = recipe_dct[name_eng]['ingredient'][target_idx]
         others = [ingre for ingre in recipe_dct[name_eng]['ingredient'] if ingre != target_en]
         
-        alt_candidates_en = findSub(gnn_emb_dct, target_en, others, k=5)
+        alt_candidates_en = findSub(gnn_emb_dct, target_en, others, k=10, L2=True)
         alt_candidates = [uts.eng2ko(alt_en) for alt_en in alt_candidates_en]
         
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
