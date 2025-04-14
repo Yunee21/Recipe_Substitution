@@ -103,7 +103,7 @@ def sidebar_menu():
         for name, icon in menu_items.items():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
-
+            '''
             btn_key = f"menu_{name}"
             button_label = f"{icon} {name}"
 
@@ -116,7 +116,7 @@ def sidebar_menu():
             custom_style = f"""
             <style>
             div[data-testid="stButton"][id="{btn_key}"] > button {{
-                background-color: {'#ba3d60' if is_selected else 'white'} !important;
+                background-color: {'#ba3d60' if is_selected else 'transparent'} !important;
                 color: {'white' if is_selected else '#ba3d60'} !important;
                 border-radius: 8px;
                 padding: 10px 14px;
@@ -134,6 +134,43 @@ def sidebar_menu():
             </style>
             """
             st.markdown(custom_style, unsafe_allow_html=True)
+            '''
+            bg_color = "#ba3d60" if is_selected else "#ffe6ed"
+            font_color = "white" if is_selected else "#ba3d60"
+            cursor = "not-allowed" if disabled else "pointer"
+            opacity = "0.5" if disabled else "1.0"
+
+            btn_html = f"""
+            <form action="" method="post">
+                <button name="menu" value="{name}" type="submit"
+                    style="
+                        background-color: {bg_color};
+                        color: {font_color};
+                        border: none;
+                        padding: 10px 14px;
+                        margin-bottom: 10px;
+                        border-radius: 8px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        width: 100%;
+                        text-align: left;
+                        cursor: {cursor};
+                        opacity: {opacity};
+                    "
+                    {'disabled' if disabled else ''}
+                >
+                    {icon} {name}
+                </button>
+            </form>
+            """
+
+            st.markdown(btn_html, unsafe_allow_html=True)
+
+        # 메뉴가 클릭되었는지 query_param으로 감지
+        query_params = st.experimental_get_query_params()
+        if "menu" in query_params:
+            selected = query_params["menu"][0]
+            st.session_state["selected_menu"] = selected
 
 
 
