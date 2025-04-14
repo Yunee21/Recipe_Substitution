@@ -341,7 +341,7 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-@st.cache_resourc
+@st.cache_resource
 def load_llama3():
     login(token="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")
 
