@@ -427,7 +427,8 @@ def recommend_page():
     model = AutoModelForCausalLM.from_pretrained(
             model_name,
             torch_dtype=torch.float16,  # load the mode with float16 for saving memory
-            device_map="auto"           # automatically allocate GPU
+            device_map="auto",          # automatically allocate GPU
+            low_cpu_mem_usage=True 
     )
 
     prompt = """
