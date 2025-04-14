@@ -344,9 +344,11 @@ def recommend_page():
     orig_recipe_ko['recipe'] = [name_ko] + [''] * (len_ingre - 1)
     orig_recipe_ko['ingredients'] = getIngredientKO(recipe_info['ingredient'])
     directions = ['\n'.join(x) for x in recipe_info['direction']]
-    
+
+    st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
     st.markdown("#### 🧾 재료")
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
+    
     st.markdown("#### 🍳 조리 방법")
     st.markdown(directions)
     
@@ -354,17 +356,9 @@ def recommend_page():
     ingredients = ['감자', '라면']
     target = recipe_info.get("대체대상", ingredients[0])  # 예시용
 
-    st.markdown(f"### 🍲 선택한 레시피: **{name_ko}**")
-    st.markdown("#### 📦 재료 목록 (파란색은 대체 대상입니다)")
+    
 
-    colored_ingredients = [
-        f"<span style='color:#1f77b4; font-weight:bold;'>{ing}</span>" if ing == target else ing
-        for ing in ingredients
-    ]
-    st.markdown(", ".join(colored_ingredients), unsafe_allow_html=True)
 
-    st.markdown("#### 🍳 조리 방법")
-    st.markdown(cook_steps)
 
     # -----------------------
     # 2. 대체 후보 재료 표시
@@ -385,16 +379,14 @@ def recommend_page():
         # -----------------------
         # 3. 대체 결과 출력
         # -----------------------
-        new_ingredients = [selected_alt if i == target else i for i in ingredients]
-        new_steps = cook_steps.replace(target, selected_alt)
 
         st.markdown("---")
-        st.markdown(f"### ✅ 대체된 레시피: **{name_ko}**")
+        st.markdown(f"### ✅ 대체된 레시피")
         st.markdown("#### 🍽️ 재료 목록")
         st.markdown(", ".join(new_ingredients))
 
-        st.markdown("#### 🧑‍🍳 조리 방법")
-        st.markdown(new_steps)
+        st.markdown("#### 🍳 조리 방법")
+        st.markdown('ㅁ')
 
 
 # -----------------------
