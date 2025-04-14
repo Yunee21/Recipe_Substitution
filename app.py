@@ -482,7 +482,10 @@ def recommend_page():
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
 
-        target_en = recipe_dct[name_eng]['ingredient'][st.session_state['target_idx']]
+        target_idx = st.session_state['target_idx']
+        target_en = recipe_dct[name_eng]['ingredient'][target_idx]
+        others = [ingre for ingre in recipe_dct[name_eng]['ingredient'] if ingre != target_en]
+        st.markdown(others)
         
         alt_candidates_en = findSub(gnn_emb_dct, target_en, k=5)
         alt_candidates = [uts.eng2ko(alt_en) for alt_en in alt_candidates_en]
