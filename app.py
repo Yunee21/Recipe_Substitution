@@ -312,14 +312,6 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-def getAlternativeIngredients(target):
-    # 실제 구현에서는 알고리즘 모델 기반 추천
-    dummy_map = {
-        "돼지고기": ["두부", "버섯", "닭고기", "계란", "오징어"],
-        "소고기": ["닭고기", "두부", "버섯", "콩단백", "오징어"],
-    }
-    return dummy_map.get(target, ["두부", "버섯", "닭고기", "계란", "오징어"])
-
 def getIngredientKO(ingre_en):
     ingre_ko = []
     full_ingre = ingre_node_dct['name']
@@ -386,30 +378,28 @@ def recommend_page():
     # -----------------------
     # 2. 대체 후보 재료 표시
     # -----------------------
-    st.markdown("#### 🔁 대체할 재료를 선택하세요:")
-    alt_candidates = uts.getAlternativeIngredients(target)  # 예: ['두부', '버섯', '계란', '닭고기', '오징어']
+    # st.markdown("#### 🔁 대체할 재료를 선택하세요:")
+    # selected_alt = st.session_state.get("selected_alternative")
 
-    selected_alt = st.session_state.get("selected_alternative")
+    # if not selected_alt:
+    #     cols = st.columns(5)
+    #     for i, alt in enumerate(alt_candidates):
+    #         with cols[i]:
+    #             if st.button(alt, key=f"alt_ingre_{i}"):
+    #                 st.session_state["selected_alternative"] = alt
+    #                 st.experimental_rerun()
+    # else:
+    #     # -----------------------
+    #     # 3. 대체 결과 출력
+    #     # -----------------------
 
-    if not selected_alt:
-        cols = st.columns(5)
-        for i, alt in enumerate(alt_candidates):
-            with cols[i]:
-                if st.button(alt, key=f"alt_ingre_{i}"):
-                    st.session_state["selected_alternative"] = alt
-                    st.experimental_rerun()
-    else:
-        # -----------------------
-        # 3. 대체 결과 출력
-        # -----------------------
+    #     st.markdown("---")
+    #     st.markdown(f"### ✅ 대체된 레시피")
+    #     st.markdown("#### 🍽️ 재료 목록")
+    #     st.markdown(", ".join(new_ingredients))
 
-        st.markdown("---")
-        st.markdown(f"### ✅ 대체된 레시피")
-        st.markdown("#### 🍽️ 재료 목록")
-        st.markdown(", ".join(new_ingredients))
-
-        st.markdown("#### 🍳 조리 방법")
-        st.markdown('ㅁ')
+    #     st.markdown("#### 🍳 조리 방법")
+    #     st.markdown('ㅁ')
 
 
 # -----------------------
