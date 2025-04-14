@@ -400,7 +400,7 @@ def get_top_k(emb_dct, target_name, k=5, L2=False):
     return topk_names
     
 def findSub(gnn_emb: dict, ingre, k=5):
-    gnn_topk = get_top_k(gnn_emb, ingre, k)
+    gnn_topk = get_top_k(gnn_emb, ingre, k=5, L2=True)
     return gnn_topk
 
 def recommend_page():
