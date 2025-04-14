@@ -280,9 +280,9 @@ def ingredient_page():
                 st.session_state["ingredient_done"] = True
                 st.success("식재료가 제출되었습니다!")
 
-                # ✅ 매핑 결과 표시 (선택적)
-                st.markdown("#### 🔍 자동 매핑 결과")
-                st.json(matched_dict)
+                # # ✅ 매핑 결과 표시 (선택적)
+                # st.markdown("#### 🔍 자동 매핑 결과")
+                # st.json(matched_dict)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
