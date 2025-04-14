@@ -341,21 +341,27 @@ def recipe_input_page():
 # -----------------------
 # 🍽️ 대체 레시피 추천
 # -----------------------
-# @st.cache_resource
-# def load_llama3():
-#     HUGGINGFACE_TOKEN = "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"
-#     login(token=HUGGINGFACE_TOKEN)
-    
-#     model_name = "meta-llama/Llama-3.1-8B-Instruct"
+@st.cache_resourc
+def load_llama3():
+    login(token="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")
 
-#     tokenizer = AutoTokenizer.from_pretrained(model_name)
-#     model = AutoModelForCausalLM.from_pretrained(
-#             model_name,
-#             torch_dtype=torch.float16,  # load the mode with float16 for saving memory
-#             device_map="auto"           # automatically allocate GPU
-#     )
-#     return tokenizer, model
-    
+    model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name,
+        trust_remote_code=True,
+        use_auth_token=True
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        low_cpu_mem_usage=True,
+        trust_remote_code=True,
+        use_auth_token=True
+    )
+
+    return tokenizer, model
 def getIngredientKO(ingre_en):
     ingre_ko = []
     full_ingre = ingre_node_dct['name']
@@ -414,22 +420,14 @@ def recommend_page():
 
     # *** 4. 조리 방법 불러오기
     st.markdown("#### 🍳 조리 방법")
-    st.markdown(directions[0])
-    st.markdown(str(recipe_info['direction']))
-
-    # tokenizer, model = load_llama3()
-    HUGGINGFACE_TOKEN = "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"
-    login(token=HUGGINGFACE_TOKEN)
     
-    model_name = "meta-llama/Llama-3.1-8B-Instruct"
+    
+    recipe_law = uts.loadPickle('data/recipe_dct.pkl')
+    direc_law = recipe_law[name_eng]['direction']
+    formatted = '\n'.join([f"Step {i+1}. {step}" for i, step in enumerate(steps)])
+    st.markdown(formatted)
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype=torch.float16,  # load the mode with float16 for saving memory
-            device_map="auto",          # automatically allocate GPU
-            low_cpu_mem_usage=True 
-    )
+    tokenizer, model = load_llama3()
 
     prompt = """
     You are a recipe assistant. Based on the list of ingredients and cooking verbs provided, write a step-by-step Korean cooking recipe using ALL the ingredients and INCLUDING as many of the given cooking verbs as possible.
@@ -447,26 +445,6 @@ def recommend_page():
     - Do NOT include any explanations outside the steps.
     - Only return the formatted step-by-step string.
     """
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    
-    # 모델 추론
-    with torch.no_grad():
-        output = model.generate(
-            **inputs,
-            max_new_tokens=512,       # 생성할 최대 토큰 수
-            temperature=0.7,          # 창의성 정도 (0.7~1.0 추천)
-            top_p=0.95,
-            do_sample=True,
-            eos_token_id=tokenizer.eos_token_id
-        )
-    
-    # 출력 디코딩
-    generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-    
-    # 프롬프트 제거 (프롬프트 포함된 경우 제거할 수도 있음)
-    response = generated_text[len(prompt):].strip()
-    
-    st.markdown(response)
 
 
     # *** 5. 대체 후보 재료 표시 ***
