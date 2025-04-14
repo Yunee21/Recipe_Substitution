@@ -135,6 +135,9 @@ def sidebar_menu():
             """
             st.markdown(custom_style, unsafe_allow_html=True)
             '''
+            btn_key = f"menu_{name}"
+            clicked = st.button(f"{icon} {name}", key=btn_key, disabled=disabled)
+
             if clicked:
                 st.session_state["selected_menu"] = name
 
