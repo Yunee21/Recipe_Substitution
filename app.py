@@ -418,22 +418,22 @@ def recommend_page():
         exchange_ingre_ko_lst = list(exchange_table_dct.keys())
         if ingre_ko in exchange_ingre_ko_lst:
             st.session_state['targets'].append(ingre_ko)
-            st.session_state['target'] = ingre_ko
+            st.session_state['target'].append(ingre_ko)
             break
     
-    if st.session_state['targets']:
+    if st.session_state['target']:
         for ingre_ko in list(orig_recipe_ko['ingredients']):
             exchange_ingre_ko_lst = list(exchange_table_dct.keys())
             matches = get_close_matches(ingre_ko, exchange_ingre_ko_lst, n=1, cutoff=0.8)
             if matches:
-                st.session_state['target'] = ingre_ko
+                st.session_state['target'].append(ingre_ko)
                 break
 
-    if st.session_state['targets']:
+    if st.session_state['target']:
         st.session_state['terminal'] = True
     else:
         st.session_state['terminal'] = False
-        target_ko = st.session_state['target']
+        target_ko = st.session_state['target'][0]
         st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(target_ko)
         orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {target_ko} ***'
         sleep(0.1)
