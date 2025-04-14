@@ -440,7 +440,6 @@ def recommend_page():
     else:
         st.session_state['terminal'] = False
         st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(st.session_state['target'])
-        st.session_state['target_en'] = recipe_info['ingredient'][st.session_state['target_idx']]
         orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {st.session_state['target']} ***'
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
@@ -476,8 +475,9 @@ def recommend_page():
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
 
-        st.markdown(st.session_state['target_en'])
-        # st.markdown(gnn_emb_dct.shape)
+        
+        target_en = recipe_dct[name_eng]['ingredient'][st.session_state['target_idx']]
+        st.markdown(target_en)
         # alt_candidates = findSub(gnn_emb_dct, st.session_state['target_en'], k=5)
         
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
