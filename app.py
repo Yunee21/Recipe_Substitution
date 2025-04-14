@@ -371,6 +371,31 @@ def getIngredientKO(ingre_en):
         ko = ingre_node_ko[idx]
         ingre_ko.append(ko)
     return ingre_ko
+    
+def get_top_k(emb_dct, target_name, k=5):
+    names = list(emb_dct.keys())
+    vectors = np.array([emb_dct[n] for n in names])
+
+    target_vector = emb_dct[target_name].reshape(1,-1)
+    sims = cosine_similarity(target_vector, vectors).flatten()
+
+    topk_indices = sims.argsort()[-(k+1):][::-1]  # exclude self
+    topk_names = [names[i] for i in topk_indices if names[i] != target_name][:k]
+
+    return topk_names
+    
+def findSub(gnn_emb: dict, ingre_lst: list, k=5):
+    sub_lst = []
+    for idx, ing in enumerate(ingre_lst):
+        gnn_topk = get_top_k(gnn_emb, ing, k)
+        sub_lst.append(gnn_topk)
+    return sub_lst
+
+@st.cache_resource
+def loadGNNEmb():
+    gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
+    return gnn_emb_dct
+gnn_emb_dct = loadGNNEmb()
 
 def recommend_page():
     
@@ -414,6 +439,7 @@ def recommend_page():
     else:
         st.session_state['terminal'] = False
         st.session_state['target_idx'] = orig_recipe_ko['ingredients'].to_list().index(st.session_state['target'])
+        st.session_state['target_en'] = recipe_info['ingredient'][st.session_state['target_idx']]
         orig_recipe_ko.at[st.session_state['target_idx'], 'ingredients'] = f'*** {st.session_state['target']} ***'
     
     st.dataframe(orig_recipe_ko['ingredients'], use_container_width=True)
@@ -448,9 +474,11 @@ def recommend_page():
 
     # *** 5. 대체 후보 재료 표시 ***
     if st.session_state['terminal']:
+        
+        alt_candidates = findSub(gnn_emb_dct, st.session_state['target_en'], k=5)
+        
         st.markdown("#### 🔁 대체 재료를 선택하세요:")
     
-        alt_candidates = ['감자', '라자냐']
         selected_alt = st.session_state.get("selected_alternative")
     
         cols = st.columns(len(alt_candidates))
