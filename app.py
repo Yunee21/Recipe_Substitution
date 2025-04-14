@@ -104,37 +104,36 @@ def sidebar_menu():
             is_selected = st.session_state["selected_menu"] == name
             disabled = name == "대체 레시피 추천" and not st.session_state["submitted"]
 
-            bg_color = "#ba3d60" if is_selected else "#ffe6ed"
-            font_color = "white" if is_selected else "#ba3d60"
-            cursor = "not-allowed" if disabled else "pointer"
-            opacity = "0.5" if disabled else "1.0"
+            btn_key = f"menu_{name}"
+            if st.button(f"{icon} {name}", key=btn_key, disabled=disabled):
+                st.session_state["selected_menu"] = name
 
-            # form 없이 JS없이 처리하는 방식
-            button_html = f"""
-            <div style="margin-bottom: 0.5rem;">
-                <a href="/?selected_menu={name}" style="
-                    display: block;
-                    background-color: {bg_color};
-                    color: {font_color};
-                    padding: 10px 14px;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    font-weight: 600;
-                    text-decoration: none;
-                    pointer-events: {'none' if disabled else 'auto'};
-                    opacity: {opacity};
-                ">
-                    {icon} {name}
-                </a>
-            </div>
-            """
-            st.markdown(button_html, unsafe_allow_html=True)
+            st.markdown(f"""
+            <style>
+            div[data-testid="stButton"][id="{btn_key}"] > button {{
+                background-color: {'#ba3d60' if is_selected else '#ffe6ed'} !important;
+                color: {'white' if is_selected else '#ba3d60'} !important;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-size: 16px;
+                font-weight: 600;
+                text-align: left;
+                width: 100%;
+                margin-bottom: 10px;
+                cursor: pointer;
+            }}
+            div[data-testid="stButton"][id="{btn_key}"] > button:hover {{
+                background-color: {'#a93554' if is_selected else '#f8d4dd'} !important;
+                color: white !important;
+            }}
+            </style>
+            """, unsafe_allow_html=True)
 
-        # URL 쿼리로부터 메뉴 선택
-        query_params = st.experimental_get_query_params()
-        if "selected_menu" in query_params:
-            selected = query_params["selected_menu"][0]
-            st.session_state["selected_menu"] = selected
+    # ✅ Updated for new Streamlit version (post-April 2024)
+    query_params = st.query_params
+    if "selected_menu" in query_params:
+        st.session_state["selected_menu"] = query_params["selected_menu"][0]
        
 
 
