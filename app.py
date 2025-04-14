@@ -71,7 +71,7 @@ def inject_custom_css():
         color: #000000;
     }
     .box-section.active {
-        background-color: #ba3d60 !important;
+        background-color: transparent !important;
         color: white !important;
     }
     .box-section.active h1,
