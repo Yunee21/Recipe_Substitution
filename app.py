@@ -296,7 +296,7 @@ def load_recipe_dct():
     recipe_name_en = uts.loadPickle("data/recipe_name_en.pkl")
     recipe_name_ko = uts.loadPickle('data/recipe_name_ko.pkl')
     recipe_law = uts.loadPickle('data/recipe_dct.pkl')
-    gnn_emb_dct = uts.loadPickle('results/zc_ingre_emb_dct.pkl')
+    gnn_emb_dct = uts.loadPickle('results/context_ingre_emb_dct.pkl')
     return recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct
     
 recipe_dct, recipe_name_en, recipe_name_ko, recipe_law, gnn_emb_dct = load_recipe_dct()
